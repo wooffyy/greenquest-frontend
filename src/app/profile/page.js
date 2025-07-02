@@ -1,197 +1,88 @@
-'use client';
+"use client"
+import { useState } from "react";
+import Sidebar from "@/components/Sidebar";
+import ProfileHeader from "@/components/ProfileHeader";
+import ProfileInfo from "@/components/ProfileInfo";
+import MobileStatsGrid from "@/components/MobileStats";
+import PostSection from "@/components/PostSection";
+import StatsCard from "@/components/StatsCard";
+import BadgesSection from "@/components/BadgesSection";
+import BadgesModal from "@/components/BadgesModal";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Sidebar from '@/components/Sidebar';
+export default function GalleryPage() {
+    const [isSidebarOpen, setSidebarOpen] = useState(false);
+    const [isBadgeModalOpen, setBadgeModalOpen] = useState(false);
 
-export default function ProfilePage() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [form, setForm] = useState({
-    fullName: '',
-    nickName: '',
-    gender: '',
-    country: '',
-    language: '',
-    city: '',
-    email: '',
-    picture: null,
-  });
-
-  const [warnUnsaved, setWarnUnsaved] = useState(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (warnUnsaved) {
-        e.preventDefault();
-        e.returnValue = '';
-      }
+    const userData = {
+        name: "Mas Jawa",
+        username: "masjava",
+        desktopUsername: "masjava",
+        location: "Depok, Indonesia",
+        streak: 42,
+        ecoPoints: 1259
     };
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [warnUnsaved]);
 
-  const handleChange = (e) => {
-    setWarnUnsaved(true);
-    const { name, value, files } = e.target;
-    setForm((o) => ({ ...o, [name]: files ? files[0] : value }));
-  };
+    // DUMMY BADGES
+    const badges = [
+        "Good Habit", "Trash Master", "Power Saver", "King Of The Kings", 
+        "Photographer", "Art Curator", "Water Saver", "Green Commuter", 
+        "Eco Warrior", "Plant Master", "Solar Champion", "Recycling Hero"
+    ];
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setWarnUnsaved(false);
-    alert('Profile updated!');
-  };
-
-  const handleLogout = () => {
-    router.push('/');
-  };
-
-  return (
-    <div className="min-h-screen bg-black text-white relative">
-      {/* Desktop Navbar */}
-      <nav className="hidden sm:flex bg-black border-b border-green-500 py-4 px-6 items-center justify-between">
-        <a href="/dashboard" className="text-green-400 text-2xl font-bold">
-          ecochallenge
-        </a>
-        <div className="space-x-6 text-sm font-medium text-white">
-          <a href="/dashboard" className="hover:text-green-400">Dashboard</a>
-          <a href="/challange" className="hover:text-green-400">Challange</a>
-          <a href="/gallery" className="hover:text-green-400">Gallery</a>
-          <a href="/leaderboard" className="hover:text-green-400">Leaderboard</a>
-        </div>
-      </nav>
-
-      {/* Mobile Hamburger */}
-      <div className="sm:hidden p-4">
-        <button onClick={() => setIsSidebarOpen(true)} className="text-white text-3xl">
-          &#9776;
-        </button>
-      </div>
-
-      {/* Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-
-      {/* Header Image */}
-      <div className="w-full h-48 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/header-leaf.jpg')" }} />
-
-      {/* Profile Form */}
-      <div className="max-w-5xl mx-auto mt-[-60px] p-8 bg-green-600 rounded-xl shadow-lg relative z-10">
-        <div className="flex items-center mb-8">
-          <div className="relative">
-            <img
-              src={
-                form.picture
-                  ? URL.createObjectURL(form.picture)
-                  : "/images/default-avatar.jpg"
-              }
-              alt="Profile"
-              className="w-20 h-20 rounded-full object-cover cursor-pointer border-2 border-white"
+    return (
+        <>
+            {/* Mobile Sidebar */}
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setSidebarOpen(false)} />
+            
+            {/* Badges Modal */}
+            <BadgesModal 
+                isOpen={isBadgeModalOpen} 
+                onClose={() => setBadgeModalOpen(false)} 
+                badges={badges} 
             />
-            <input
-              type="file"
-              name="picture"
-              accept="image/*"
-              onChange={handleChange}
-              className="absolute inset-0 opacity-0 cursor-pointer rounded-full"
+            
+            {/* Navigation */}
+            <ProfileHeader 
+                isSidebarOpen={isSidebarOpen} 
+                setSidebarOpen={setSidebarOpen} 
             />
-          </div>
-          <div className="ml-6">
-            <div className="text-xl font-bold">{form.fullName || 'Your Name'}</div>
-            <div className="text-gray-200">{form.email || 'No email added yet'}</div>
-          </div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="ml-auto bg-red-800 px-2 py-1 rounded hover:bg-red-700 text-sm"
-          >
-            Log Out
-          </button>
-        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="bg-gray-200/70 rounded-lg p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                name="fullName"
-                placeholder="Full Name"
-                value={form.fullName}
-                onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black"
-              />
-              <input
-                type="text"
-                name="nickName"
-                placeholder="Nick Name"
-                value={form.nickName}
-                onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black"
-              />
-              <select
-                name="gender"
-                value={form.gender}
-                onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white text-black"
-              >
-                <option value="">Gender</option>
-                <option>Male</option>
-                <option>Female</option>
-                <option>Rather not say</option>
-              </select>
-              <select
-                name="country"
-                value={form.country}
-                onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white text-black"
-              >
-                <option value="">Country</option>
-                <option>Indonesia</option>
-                <option>USA</option>
-                <option>UK</option>
-                <option>Others</option>
-              </select>
-              <select
-                name="language"
-                value={form.language}
-                onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white text-black"
-              >
-                <option value="">Language</option>
-                <option>English</option>
-                <option>Indonesian</option>
-                <option>Spanish</option>
-              </select>
-              <input
-                type="text"
-                name="city"
-                placeholder="City"
-                value={form.city}
-                onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black"
-              />
-              <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black col-span-1 md:col-span-2"
-              />
+            {/* Mobile Layout */}
+            <div className="md:hidden bg-black min-h-screen text-white">
+                {/* Profile Section */}
+                <ProfileInfo user={userData} isMobile={true} />
+
+                {/* Stats and Streak Grid */}
+                <MobileStatsGrid 
+                    streak={userData.streak}
+                    ecoPoints={userData.ecoPoints}
+                    badges={badges}
+                    onShowAllBadges={() => setBadgeModalOpen(true)}
+                />
+
+                {/* Post User Section */}
+                <PostSection isMobile={true} />
             </div>
-          </div>
 
-          <div className="text-right">
-            <button
-              type="submit"
-              className="bg-green-800 px-3 py-2 rounded text-gray-200 font-semibold hover:bg-blue-600"
-            >
-              Update Profile
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+            {/* Desktop Layout */}
+            <div className="hidden md:block bg-black min-h-screen text-white">
+                {/* Profile Info */}
+                <ProfileInfo user={{
+                    ...userData,
+                    username: userData.desktopUsername
+                }} isMobile={false} />
+
+                {/* Post + Stats */}
+                <section className="grid grid-cols-6 gap-4 mt-16 px-4 md:px-36 items-start">
+                    <PostSection isMobile={false} />
+                    
+                    {/* Stats Section */}
+                    <div className="col-span-2 flex flex-col gap-4">
+                        <StatsCard ecoPoints={userData.ecoPoints} />
+                        <BadgesSection badges={badges} />
+                    </div>
+                </section>
+            </div>
+        </>
+    );
 }
