@@ -18,10 +18,7 @@ export default function MainNavbar() {
           Dashboard
         </Link>
         <Link href="/challange" className="hover:text-green-300">
-          Quest
-        </Link>
-        <Link href="/gallery" className="hover:text-green-300">
-          Gallery
+          Challenge
         </Link>
         <Link href="/leaderboard" className="hover:text-green-300">
           Leaderboard

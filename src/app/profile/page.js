@@ -1,19 +1,22 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Sidebar from '@/components/Sidebar';
 
 export default function ProfilePage() {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [form, setForm] = useState({
-    fullName: "",
-    nickName: "",
-    gender: "",
-    country: "",
-    language: "",
-    city: "",
-    email: "",
+    fullName: '',
+    nickName: '',
+    gender: '',
+    country: '',
+    language: '',
+    city: '',
+    email: '',
     picture: null,
   });
+
   const [warnUnsaved, setWarnUnsaved] = useState(false);
   const router = useRouter();
 
@@ -21,12 +24,11 @@ export default function ProfilePage() {
     const handleBeforeUnload = (e) => {
       if (warnUnsaved) {
         e.preventDefault();
-        e.returnValue = "";
+        e.returnValue = '';
       }
     };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () =>
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
   }, [warnUnsaved]);
 
   const handleChange = (e) => {
@@ -38,17 +40,17 @@ export default function ProfilePage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setWarnUnsaved(false);
-    alert("Profile updated!");
+    alert('Profile updated!');
   };
 
   const handleLogout = () => {
-    router.push("/");
+    router.push('/');
   };
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Navbar */}
-      <nav className="bg-black border-b border-green-500 py-4 px-6 flex items-center justify-between">
+    <div className="min-h-screen bg-black text-white relative">
+      {/* Desktop Navbar */}
+      <nav className="hidden sm:flex bg-black border-b border-green-500 py-4 px-6 items-center justify-between">
         <a href="/dashboard" className="text-green-400 text-2xl font-bold">
           ecochallenge
         </a>
@@ -60,13 +62,22 @@ export default function ProfilePage() {
         </div>
       </nav>
 
+      {/* Mobile Hamburger */}
+      <div className="sm:hidden p-4">
+        <button onClick={() => setIsSidebarOpen(true)} className="text-white text-3xl">
+          &#9776;
+        </button>
+      </div>
+
+      {/* Sidebar */}
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+
       {/* Header Image */}
       <div className="w-full h-48 bg-cover bg-center"
         style={{ backgroundImage: "url('/images/header-leaf.jpg')" }} />
 
-      {/* Profile Form Container */}
+      {/* Profile Form */}
       <div className="max-w-5xl mx-auto mt-[-60px] p-8 bg-green-600 rounded-xl shadow-lg relative z-10">
-        {/* Avatar + Info */}
         <div className="flex items-center mb-8">
           <div className="relative">
             <img
@@ -87,25 +98,19 @@ export default function ProfilePage() {
             />
           </div>
           <div className="ml-6">
-            <div className="text-xl font-bold">
-              {form.fullName || "Your Name"}
-            </div>
-            <div className="text-gray-200">
-              {form.email || "No email added yet"}
-            </div>
+            <div className="text-xl font-bold">{form.fullName || 'Your Name'}</div>
+            <div className="text-gray-200">{form.email || 'No email added yet'}</div>
           </div>
           <button
             type="button"
             onClick={handleLogout}
-            className="ml-auto bg-red-800 px-2 py-1 rounded hover:bg-red-800"
+            className="ml-auto bg-red-800 px-2 py-1 rounded hover:bg-red-700 text-sm"
           >
             Log Out
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Kotak abu-abu di belakang input */}
           <div className="bg-gray-200/70 rounded-lg p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
@@ -114,7 +119,7 @@ export default function ProfilePage() {
                 placeholder="Full Name"
                 value={form.fullName}
                 onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black"
               />
               <input
                 type="text"
@@ -122,13 +127,13 @@ export default function ProfilePage() {
                 placeholder="Nick Name"
                 value={form.nickName}
                 onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black"
               />
               <select
                 name="gender"
                 value={form.gender}
                 onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white text-black focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full rounded border border-black px-5 py-3 text-sm bg-white text-black"
               >
                 <option value="">Gender</option>
                 <option>Male</option>
@@ -139,7 +144,7 @@ export default function ProfilePage() {
                 name="country"
                 value={form.country}
                 onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white text-black focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full rounded border border-black px-5 py-3 text-sm bg-white text-black"
               >
                 <option value="">Country</option>
                 <option>Indonesia</option>
@@ -151,7 +156,7 @@ export default function ProfilePage() {
                 name="language"
                 value={form.language}
                 onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white text-black focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full rounded border border-black px-5 py-3 text-sm bg-white text-black"
               >
                 <option value="">Language</option>
                 <option>English</option>
@@ -164,7 +169,7 @@ export default function ProfilePage() {
                 placeholder="City"
                 value={form.city}
                 onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black"
               />
               <input
                 type="email"
@@ -172,7 +177,7 @@ export default function ProfilePage() {
                 placeholder="Email"
                 value={form.email}
                 onChange={handleChange}
-                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black col-span-1 md:col-span-2 focus:outline-none focus:ring-2 focus:ring-black"
+                className="w-full rounded border border-black px-5 py-3 text-sm bg-white placeholder-black text-black col-span-1 md:col-span-2"
               />
             </div>
           </div>
