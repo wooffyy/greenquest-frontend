@@ -1,9 +1,10 @@
 import './globals.css';
 import { Poppins as PoppinsFont } from 'next/font/google';
+import SessionWrapper from '../components/SessionWrapper'; // <-- Make sure this path matches
 
 const poppins = PoppinsFont({
   subsets: ['latin'],
-  weight: ['400', '600', '700'], // Add the exact weights you need
+  weight: ['400', '600', '700'],
 });
 
 export const metadata = {
@@ -15,7 +16,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={poppins.className}>
-        {children}
+        <SessionWrapper>{children}</SessionWrapper>
       </body>
     </html>
   );
