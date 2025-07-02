@@ -1,4 +1,8 @@
-export default function Page() {
-    return <div className="text-white p-6">[gallery]</div>;
+import GalleryPage from "@/components/gallery";
+
+export default function Gallery() {
+    return (
+      <GalleryPage />
+    ); 
   }
   
