@@ -1,9 +1,10 @@
 'use client';
 
-import SocialAuth from '@/components/SocialAuth';
 import { signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Heading = ({ children }) => (
   <h2 className="text-2xl font-bold mb-8 text-center">{children}</h2>
@@ -13,6 +14,7 @@ export default function Landing({ mode }) {
   const router = useRouter();
   const params = useSearchParams();
   const [error, setError] = useState(params.get('error'));
+  const [showPassword, setShowPassword] = useState(false);
 
   const isLogin = mode === 'login';
 
@@ -34,71 +36,133 @@ export default function Landing({ mode }) {
 
   return (
     <main className="min-h-screen bg-black flex items-center justify-center px-4 py-8 sm:py-16 relative">
-      <a
+      {/* Logo */}
+      <Link
         href="/"
-        className="absolute left-4 top-4 text-2xl sm:text-3xl font-semibold text-green-400 drop-shadow-sm z-10"
+        className="
+          text-2xl font-semibold text-[#89F336] drop-shadow-sm z-10
+          absolute top-4 left-1/2 transform -translate-x-1/2
+          md:left-6 md:translate-x-0
+        "
       >
         ecochallenge
-      </a>
+      </Link>
 
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-10 w-full max-w-5xl mt-20 sm:mt-0">
-        {/* Social Auth Card */}
-        <div className="w-full max-w-xs sm:max-w-md p-6 sm:p-10 rounded-3xl text-black border-2 border-green-400 bg-[#e5e5e5] flex flex-col items-center">
-          <Heading>{isLogin ? 'Log In' : 'Sign Up'}</Heading>
-          <SocialAuth callbackUrl="/profile" wide />
+      <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-7xl gap-12 md:gap-28">
+        <div className="hidden md:flex flex-col items-center justify-center">
+          <img 
+            src="/images/auth_img.png" 
+            alt="Eco Challenge Illustration" 
+            className="w-[26rem] h-[26rem] lg:w-[32rem] lg:h-[32rem] object-contain"
+          />
+          <h1 className="text-white text-3xl lg:text-4xl font-bold mt-6 text-center">
+            Start your journey right now!
+          </h1>
         </div>
 
-        {/* OR Divider */}
-        <div className="relative flex items-center justify-center sm:flex-col sm:justify-start">
-          <div className="h-px sm:h-40 w-24 sm:w-px bg-[repeating-linear-gradient(to_right,_#666_0_6px,_transparent_6px_12px)] sm:bg-[repeating-linear-gradient(to_bottom,_#666_0_6px,_transparent_6px_12px)]" />
-          <span className="absolute text-gray-200 font-semibold bg-black px-2 sm:top-1/2 sm:-translate-y-1/2 sm:left-1/2 sm:-translate-x-1/2 left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
-            OR
-          </span>
-        </div>
+        {/* Right Section - Form */}
+        <div className="w-full max-w-md">
+          <div className="bg-white text-black rounded-3xl p-8 shadow-2xl">
+            <Heading>{isLogin ? 'Sign In' : 'Sign Up'}</Heading>
+            
+            <form onSubmit={isLogin ? handleLogin : handleRegister} className="space-y-6">
+              {/* Full Name Field (Only for Register) */}
+              {!isLogin && (
+                <div>
+                  <label htmlFor="fullname" className="block text-sm font-medium text-black mb-2">
+                    Fullname
+                  </label>
+                  <input
+                    type="text"
+                    id="fullname"
+                    name="fullname"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
+                    placeholder="Enter your full name"
+                  />
+                </div>
+              )}
 
-        {/* Email Auth Card */}
-        <div className="w-full max-w-xs sm:max-w-md p-6 sm:p-10 rounded-3xl text-black border-2 border-green-400 bg-green-100 flex flex-col items-center">
-          <Heading>{isLogin ? 'Log In' : 'Sign Up'}</Heading>
+              {/* Email Field */}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
+                  placeholder="Enter your email"
+                />
+              </div>
 
-          {error && (
-            <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
-          )}
+              {/* Password Field */}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-black mb-2">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    required
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
+                    placeholder="Enter your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-black transition-colors duration-200"
+                  >
+                    {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+                  </button>
+                </div>
+              </div>
 
-          <form
-            onSubmit={isLogin ? handleLogin : handleRegister}
-            className="w-full space-y-4"
-          >
-            {!isLogin && (
-              <input
-                type="text"
-                name="name"
-                placeholder="Name"
-                className="w-full rounded-full border px-5 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-400"
-                required
-              />
-            )}
-            <input
-              type="email"
-              name="email"
-              placeholder="Email"
-              className="w-full rounded-full border px-5 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-400"
-              required
-            />
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              className="w-full rounded-full border px-5 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-400"
-              required
-            />
+              {/* Error Message */}
+              {error && (
+                <div className="text-red-500 text-sm text-center bg-red-50 py-2 px-4 rounded-lg">
+                  {error}
+                </div>
+              )}
 
-            <button
-              type="submit"
-              className="w-full rounded-full bg-green-500 text-white py-3 text-sm font-semibold hover:brightness-110 active:brightness-95"
-            >
-              {isLogin ? 'Log In' : 'Sign Up'}
-            </button>
-          </form>
+              {/* Redirect Text */}
+              <div className="text-center text-sm text-gray-600">
+                {isLogin ? (
+                  <>
+                    Don't have an account yet?{' '}
+                    <Link 
+                      href="/auth/register" 
+                      className="text-[#89F336] font-semibold hover:underline transition-all duration-200"
+                    >
+                      Sign up
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    Do you already have an account?{' '}
+                    <Link 
+                      href="/auth/login" 
+                      className="text-[#89F336] font-semibold hover:underline transition-all duration-200"
+                    >
+                      Sign in
+                    </Link>
+                  </>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <button
+                type="submit"
+                className="w-full bg-[#89F336] text-white py-3 px-6 rounded-xl font-semibold hover:bg-[#7BE02A] focus:outline-none transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]"
+              >
+                {isLogin ? 'Sign In' : 'Sign Up'}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </main>

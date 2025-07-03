@@ -8,14 +8,11 @@ import ProfileHeader from '@/components/ProfileHeader';
 export default function ProfilePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [form, setForm] = useState({
-    fullName: '',
-    nickName: '',
-    gender: '',
-    country: '',
-    language: '',
-    city: '',
+    fullname: '',
+    userame: '',
     email: '',
-    picture: null,
+    password: '',
+    photo: null,
   });
 
   const [warnUnsaved, setWarnUnsaved] = useState(false);
