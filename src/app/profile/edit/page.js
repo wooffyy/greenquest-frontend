@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
+import ProfileHeader from '@/components/ProfileHeader';
 
 export default function ProfilePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -49,32 +50,18 @@ export default function ProfilePage() {
 
   return (
     <div className="min-h-screen bg-black text-white relative">
-      {/* Desktop Navbar */}
-      <nav className="hidden sm:flex bg-black border-b border-green-500 py-4 px-6 items-center justify-between">
-        <a href="/dashboard" className="text-green-400 text-2xl font-bold">
-          ecochallenge
-        </a>
-        <div className="space-x-6 text-sm font-medium text-white">
-          <a href="/dashboard" className="hover:text-green-400">Dashboard</a>
-          <a href="/challange" className="hover:text-green-400">Challange</a>
-          <a href="/gallery" className="hover:text-green-400">Gallery</a>
-          <a href="/leaderboard" className="hover:text-green-400">Leaderboard</a>
-        </div>
-      </nav>
-
-      {/* Mobile Hamburger */}
-      <div className="sm:hidden p-4">
-        <button onClick={() => setIsSidebarOpen(true)} className="text-white text-3xl">
-          &#9776;
-        </button>
-      </div>
-
-      {/* Sidebar */}
+      {/* Replaced old nav with ProfileHeader */}
+      <ProfileHeader
+        isSidebarOpen={isSidebarOpen}
+        setSidebarOpen={setIsSidebarOpen}
+      />
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Header Image */}
-      <div className="w-full h-48 bg-cover bg-center"
-        style={{ backgroundImage: "url('/images/header-leaf.jpg')" }} />
+      <div
+        className="w-full h-48 bg-cover bg-center"
+        style={{ backgroundImage: "url('/images/header-leaf.jpg')" }}
+      />
 
       {/* Profile Form */}
       <div className="max-w-5xl mx-auto mt-[-60px] p-8 bg-green-600 rounded-xl shadow-lg relative z-10">
@@ -98,8 +85,12 @@ export default function ProfilePage() {
             />
           </div>
           <div className="ml-6">
-            <div className="text-xl font-bold">{form.fullName || 'Your Name'}</div>
-            <div className="text-gray-200">{form.email || 'No email added yet'}</div>
+            <div className="text-xl font-bold">
+              {form.fullName || 'Your Name'}
+            </div>
+            <div className="text-gray-200">
+              {form.email || 'No email added yet'}
+            </div>
           </div>
           <button
             type="button"
@@ -182,10 +173,10 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="text-right">
+          <div className="flex justify-end mt-6">
             <button
               type="submit"
-              className="bg-green-800 px-3 py-2 rounded text-gray-200 font-semibold hover:bg-blue-600"
+              className="bg-green-800 px-6 py-3 rounded text-gray-200 font-semibold hover:bg-blue-600 w-full sm:w-auto"
             >
               Update Profile
             </button>
