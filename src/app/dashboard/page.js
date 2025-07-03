@@ -1,7 +1,8 @@
+// app/dashboard/page.js
 "use client";
 
 import { useEffect, useState } from "react";
-import api from "@/lib/api";
+import { getAllPosts } from "@/lib/api_post";
 import Post from "@/components/Post";
 import PostCards from "@/components/PostCards";
 import Sidebar from "@/components/Sidebar";
@@ -10,24 +11,23 @@ import Link from "next/link";
 export default function Main() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-
   const [posts, setPosts] = useState([]);
 
-  useEffect(() => {
-    api.get("/posts")
-      .then((res) => setPosts(res.data))
-      .catch((err) => console.error("Error fetching posts:", err));
-  }, []);
-  
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  useEffect(() => {
+    getAllPosts()
+      .then((data) => setPosts(data))
+      .catch((err) => console.error("Error fetching posts:", err));
+  }, []);
 
   return (
     <div className="min-h-screen bg-black text-white font-sans px-10 py-6">
       {/* Header */}
       <header className="flex flex-col-3 md:flex-col-1 justify-between items-center mb-6">
         <div className="text-2xl font-bold md:hidden">
-          <button onClick={( isSidebarOpen ) => setSidebarOpen(true)}><img src="./hamburger.svg" alt="menu" className="w-8 h-8"/></button>  
+          <button onClick={() => setSidebarOpen(true)}><img src="./hamburger.svg" alt="menu" className="w-8 h-8"/></button>  
         </div>
         <div className="text-2xl font-bold text-[#89F336] hover:text-[#9aff4a] transition-colors duration-200 cursor-pointer">
           ecochallenge
@@ -60,7 +60,6 @@ export default function Main() {
           >
             See More
           </Link>
-          
         </aside>
 
         {/* Center Column (4/8) - Post Feed */}
@@ -88,13 +87,11 @@ export default function Main() {
 
         {/* Right Column (2/8) - Streak & Daily Quest */}
         <aside className="hidden md:flex col-span-2 flex-col gap-4">
-          {/* Streak */}
           <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:scale-105 hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
             <div className="text-4xl font-bold">42</div>
             <div className="text-sm font-semibold">DAYS</div>
           </div>
 
-          {/* Daily Quest */}
           <div className="bg-[#89F336] text-black p-4 rounded-xl flex flex-col justify-between h-full hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300">
             <div className="font-semibold mb-2">DAILY QUEST</div>
             <div className="flex flex-col gap-2 text-sm">

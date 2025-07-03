@@ -1,15 +1,21 @@
+// components/PostCards.js
 import { useState } from "react";
 import Report from "./Report";
+import { likePost, dislikePost } from "@/lib/api_post";
 
-function Like({ liked, setLiked, disliked, setDisliked }) {
+function Like({ liked, setLiked, disliked, setDisliked, postId }) {
+  const handleLike = async () => {
+    try {
+      await likePost(postId);
+      setLiked(!liked);
+      if (disliked) setDisliked(false);
+    } catch (err) {
+      console.error("Failed to like post:", err);
+    }
+  };
+
   return (
-    <button
-      onClick={() => {
-        setLiked(!liked);
-        if (disliked) setDisliked(false);
-      }}
-      className="flex items-center gap-1"
-    >
+    <button onClick={handleLike} className="flex items-center gap-1">
       <img
         src={liked ? "/liked.svg" : "/like.svg"}
         alt="like icon"
@@ -20,15 +26,19 @@ function Like({ liked, setLiked, disliked, setDisliked }) {
   );
 }
 
-function Dislike({ disliked, setDisliked, liked, setLiked }) {
+function Dislike({ disliked, setDisliked, liked, setLiked, postId }) {
+  const handleDislike = async () => {
+    try {
+      await dislikePost(postId);
+      setDisliked(!disliked);
+      if (liked) setLiked(false);
+    } catch (err) {
+      console.error("Failed to dislike post:", err);
+    }
+  };
+
   return (
-    <button
-      onClick={() => {
-        setDisliked(!disliked);
-        if (liked) setLiked(false); // turn off like if dislike is clicked
-      }}
-      className="flex items-center gap-1"
-    >
+    <button onClick={handleDislike} className="flex items-center gap-1">
       <img
         src={disliked ? "/disliked.svg" : "/dislike.svg"}
         alt="dislike icon"
@@ -65,22 +75,20 @@ export default function PostCards({ post }) {
     <div className="bg-white text-black rounded-xl p-4">
       {/* User Info */}
       <div className="flex items-center gap-2 mb-2">
-         <div className="flex items-center gap-2 mb-2">
-            <img
-              src={post.user.profilePicture}
-              alt={post.user.username}
-              className="w-8 h-8 rounded-full object-cover"
-            />
-          </div>
+        <img
+          src={post.user.profilePicture}
+          alt={post.user.username}
+          className="w-8 h-8 rounded-full object-cover"
+        />
         <span className="font-medium">{post.user.username}</span>
         <span className="text-sm text-gray-600 ml-auto right-4"><ReportButton /></span>
       </div>
-      
+
       {/* Caption */}
       <p className="mb-4">{post.caption}</p>
 
       {/* Image */}
-       <img
+      <img
         src={post.imageUrl}
         alt="post"
         className="w-full h-64 object-cover rounded-lg"
@@ -88,27 +96,8 @@ export default function PostCards({ post }) {
 
       {/* Like/Dislike */}
       <div className="flex gap-6 mt-4 text-sm text-gray-600">
-        <button
-          onClick={() => {
-            setLiked(!liked);
-            if (disliked) setDisliked(false);
-          }}
-          className="flex items-center gap-1"
-        >
-          <img src={liked ? "/liked.svg" : "/like.svg"} className="w-4 h-4" />
-          <span className={liked ? "text-black" : "text-gray-600"}>Likes</span>
-        </button>
-
-        <button
-          onClick={() => {
-            setDisliked(!disliked);
-            if (liked) setLiked(false);
-          }}
-          className="flex items-center gap-1"
-        >
-          <img src={disliked ? "/disliked.svg" : "/dislike.svg"} className="w-4 h-4" />
-          <span className={disliked ? "text-black" : "text-gray-600"}>Dislikes</span>
-        </button>
+        <Like liked={liked} setLiked={setLiked} disliked={disliked} setDisliked={setDisliked} postId={post.id} />
+        <Dislike disliked={disliked} setDisliked={setDisliked} liked={liked} setLiked={setLiked} postId={post.id} />
       </div>
     </div>
   );

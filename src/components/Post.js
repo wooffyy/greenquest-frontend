@@ -1,13 +1,19 @@
+"use client";
+
 import { useState } from "react";
+import { uploadPost } from "@/lib/api_post";
 
 function Post({ isOpen, onClose }) {
-  const [image, setImage] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const [caption, setCaption] = useState("");
+  const [loading, setLoading] = useState(false);
 
   function handleImageChange(e) {
     const file = e.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file));
+      setImageFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   }
 
@@ -15,17 +21,26 @@ function Post({ isOpen, onClose }) {
     setCaption(e.target.value);
   }
 
-  function handlePost() {
-    if (!image || !caption.trim()) {
+  async function handlePost() {
+    if (!imageFile || !caption.trim()) {
       alert("Please upload an image and write a caption.");
       return;
     }
 
-    console.log("Uploading post:", { image, caption });
-    setImage(null);
-    setCaption("");
-    alert("Post uploaded successfully!");
-    onClose();
+    try {
+      setLoading(true);
+      await uploadPost(imageFile, caption);
+      setImageFile(null);
+      setPreviewUrl(null);
+      setCaption("");
+      alert("Post uploaded successfully!");
+      onClose();
+    } catch (err) {
+      alert("Failed to upload post.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (!isOpen) return null;
@@ -46,8 +61,8 @@ function Post({ isOpen, onClose }) {
 
           {/* Upload Area */}
           <label className="w-full h-64 bg-[#1a1a1a] rounded-2xl border-2 border-dashed border-[#89F336] flex flex-col items-center justify-center cursor-pointer relative overflow-hidden">
-            {image ? (
-              <img src={image} alt="preview" className="w-full h-full object-cover rounded-2xl" />
+            {previewUrl ? (
+              <img src={previewUrl} alt="preview" className="w-full h-full object-cover rounded-2xl" />
             ) : (
               <div className="flex flex-col items-center gap-2">
                 <div className="w-12 h-12 bg-white rounded flex items-center justify-center">
@@ -71,9 +86,10 @@ function Post({ isOpen, onClose }) {
           {/* Upload Button */}
           <button
             onClick={handlePost}
-            className="bg-[#89F336] px-8 py-2 rounded-full text-black font-semibold hover:scale-105 transition duration-300 ease-in-out"
+            className="bg-[#89F336] px-8 py-2 rounded-full text-black font-semibold hover:scale-105 transition duration-300 ease-in-out disabled:opacity-50"
+            disabled={loading}
           >
-            Upload
+            {loading ? "Uploading..." : "Upload"}
           </button>
         </div>
       </div>
