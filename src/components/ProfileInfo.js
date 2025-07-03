@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 
 export default function ProfileInfo({ user, isMobile = false }) {
@@ -11,6 +11,14 @@ export default function ProfileInfo({ user, isMobile = false }) {
                 <h1 className="text-xl font-bold">{user.name}</h1>
                 <p className="text-sm text-slate-400">@{user.username}</p>
                 <p className="text-sm text-slate-400">{user.location}</p>
+
+                {/* Edit Profile Button for Mobile */}
+                <Link
+                    href="/profile/edit"
+                    className="mt-4 bg-white font-semibold text-black w-full text-center px-4 py-2 rounded-lg hover:bg-slate-100 transition-all border max-w-xs"
+                >
+                    Edit Profile
+                </Link>
             </div>
         );
     }
@@ -43,8 +51,8 @@ export default function ProfileInfo({ user, isMobile = false }) {
             {/* Streak Display (2 col) */}
             <div className="col-span-2 flex items-start">
                 <div className="bg-[#89F336] font-bold text-black rounded-xl flex items-center justify-center">
-                    <div className="p-4 text-7xl">{user.streak}</div>  
-                    <div className="p-4 text-xl">DAYS STREAK!</div>  
+                    <div className="p-4 text-7xl">{user.streak}</div>
+                    <div className="p-4 text-xl">DAYS STREAK!</div>
                 </div>
             </div>
         </section>
