@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
+import api from "@/lib/api";
 import Post from "@/components/Post";
 import PostCards from "@/components/PostCards";
 import Sidebar from "@/components/Sidebar";
@@ -9,6 +11,14 @@ export default function Main() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    api.get("/posts")
+      .then((res) => setPosts(res.data))
+      .catch((err) => console.error("Error fetching posts:", err));
+  }, []);
+  
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -68,8 +78,12 @@ export default function Main() {
             </button>
           </div>
 
-          {/* Feed Post */}
-          <PostCards />
+          {/* Feed Post (map all post) */}
+          {posts.length === 0 ? (
+            <p className="text-white text-sm">No posts yet.</p>
+          ) : (
+            posts.map((post) => <PostCards key={post.id} post={post} />)
+          )}
         </section>
 
         {/* Right Column (2/8) - Streak & Daily Quest */}

@@ -6,7 +6,7 @@ function Like({ liked, setLiked, disliked, setDisliked }) {
     <button
       onClick={() => {
         setLiked(!liked);
-        if (disliked) setDisliked(false); // turn off dislike if like is clicked
+        if (disliked) setDisliked(false);
       }}
       className="flex items-center gap-1"
     >
@@ -57,23 +57,58 @@ function ReportButton({ report }) {
   );
 }
 
-export default function PostCards() {
+export default function PostCards({ post }) {
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
 
   return (
     <div className="bg-white text-black rounded-xl p-4">
+      {/* User Info */}
       <div className="flex items-center gap-2 mb-2">
-        <div className="w-8 h-8 rounded-full bg-[#89F336] text-black flex items-center justify-center font-semibold">B</div>
-        <span className="font-medium">Bobby</span>
+         <div className="flex items-center gap-2 mb-2">
+            <img
+              src={post.user.profilePicture}
+              alt={post.user.username}
+              className="w-8 h-8 rounded-full object-cover"
+            />
+          </div>
+        <span className="font-medium">{post.user.username}</span>
         <span className="text-sm text-gray-600 ml-auto right-4"><ReportButton /></span>
       </div>
-      <p className="mb-4">Today I turn off the lights to save energy</p>
       
-      <div className="w-full h-32 bg-blue-100 rounded-lg flex items-end justify-center" />
+      {/* Caption */}
+      <p className="mb-4">{post.caption}</p>
+
+      {/* Image */}
+       <img
+        src={post.imageUrl}
+        alt="post"
+        className="w-full h-64 object-cover rounded-lg"
+      />
+
+      {/* Like/Dislike */}
       <div className="flex gap-6 mt-4 text-sm text-gray-600">
-        <Like liked={liked} setLiked={setLiked} disliked={disliked} setDisliked={setDisliked} />
-        <Dislike disliked={disliked} setDisliked={setDisliked} liked={liked} setLiked={setLiked} />
+        <button
+          onClick={() => {
+            setLiked(!liked);
+            if (disliked) setDisliked(false);
+          }}
+          className="flex items-center gap-1"
+        >
+          <img src={liked ? "/liked.svg" : "/like.svg"} className="w-4 h-4" />
+          <span className={liked ? "text-black" : "text-gray-600"}>Likes</span>
+        </button>
+
+        <button
+          onClick={() => {
+            setDisliked(!disliked);
+            if (liked) setLiked(false);
+          }}
+          className="flex items-center gap-1"
+        >
+          <img src={disliked ? "/disliked.svg" : "/dislike.svg"} className="w-4 h-4" />
+          <span className={disliked ? "text-black" : "text-gray-600"}>Dislikes</span>
+        </button>
       </div>
     </div>
   );
