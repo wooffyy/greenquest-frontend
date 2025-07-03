@@ -13,10 +13,10 @@ export default function LeaderboardPage() {
       <ResponsiveHeader />
 
       <div className="max-w-5xl mx-auto pt-20 pb-1">
-        <div className="flex justify-center gap-4 items-end mb-16">
-          <PodiumUser user={third} rank={3} height="h-48" />
-          <PodiumUser user={first} rank={1} height="h-64" isWinner />
-          <PodiumUser user={second} rank={2} height="h-56" />
+        <div className="flex justify-center gap-0 items-end mb-16">
+          <PodiumUser user={third} rank={3} height="h-40" />
+          <PodiumUser user={first} rank={1} height="h-80" isWinner />
+          <PodiumUser user={second} rank={2} height="h-60" />
         </div>
 
         <div className="bg-green-700 rounded-t-3xl px-6 py-4">
@@ -46,6 +46,12 @@ function PodiumUser({ user, rank, height, isWinner = false }) {
   const bgColor = rank === 1 ? 'bg-white' : 'bg-green-700';
   const textColor = rank === 1 ? 'text-black' : 'text-white';
 
+  const badgeColors = {
+    1: 'bg-[#e8c400]', // Gold
+    2: 'bg-[#C0C0C0]', // Silver
+    3: 'bg-[#CD7F32]'  // Bronze
+  };
+
   return (
     <div className={`flex flex-col items-center justify-end w-32 rounded-t-xl relative pb-4 ${height} ${bgColor} overflow-visible`}>
       {isWinner && (
@@ -53,15 +59,27 @@ function PodiumUser({ user, rank, height, isWinner = false }) {
           <img src="/images/crown.png" alt="Crown" className="h-10 w-auto" />
         </div>
       )}
-      <div className="absolute -top-16 w-20 h-20 rounded-full border-4 border-green-500 overflow-hidden bg-white z-20">
-        <img src={user.avatar} alt={user.username} className="object-cover w-full h-full" />
+
+      {/* Avatar + Rank badge */}
+      <div className="absolute -top-16 w-20 h-20 z-20">
+        <div className="relative w-full h-full">
+          <div className="w-full h-full rounded-full border-4 border-green-500 overflow-hidden bg-white">
+            <img src={user.avatar} alt={user.username} className="object-cover w-full h-full" />
+          </div>
+          <div className={`absolute -bottom-2 left-1/2 transform -translate-x-1/2 ${badgeColors[rank]} text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center z-30 shadow-md`}>
+            {rank}
+          </div>
+        </div>
       </div>
-      <div className={`mt-20 text-sm ${textColor}`}>{user.fullName}</div>
-      <div className={`text-xl font-bold ${textColor}`}>{user.points}</div>
-      <div className={`text-sm ${textColor}`}>{user.username}</div>
-      <div className="absolute top-1 left-1 text-sm bg-green-600 text-white rounded-full w-6 h-6 flex items-center justify-center">
-        {rank}
+
+      {/* Spacer to make room for floating avatar */}
+      <div className="mt-12 text-center">
+        <div className={`text-sm ${textColor}`}>{user.fullName}</div>
+        <div className={`text-xl font-bold ${textColor}`}>{user.points}</div>
+        <div className={`text-sm ${textColor}`}>{user.username}</div>
       </div>
     </div>
   );
 }
+
+
