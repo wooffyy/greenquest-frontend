@@ -34,11 +34,26 @@ export default function ProfileHeader({ isSidebarOpen, setSidebarOpen }) {
           </Link>
 
           {/* Center: Nav Links */}
-          <div className="space-x-6 text-sm font-medium">
-            <Link href="/dashboard" className="hover:text-[#89F336]">Dashboard</Link>
-            <Link href="/challange" className="hover:text-[#89F336]">Challenge</Link>
-            <Link href="/leaderboard" className="hover:text-[#89F336]">Leaderboard</Link>
-          </div>
+          <nav className="absolute left-1/2 transform -translate-x-1/2 space-x-6 hidden md:flex">
+            <Link
+              href="/dashboard"
+              className={`hover:text-[#89f336] ${isCurrentPage("/dashboard") ? "text-[#89f336]" : "text-white"}`}
+            >
+              Dashboard
+            </Link>
+            <Link
+              href="/challenge"
+              className={`hover:text-[#89f336] ${isCurrentPage("/challenge") ? "text-[#89f336]" : "text-white"}`}
+            >
+              Challenge
+            </Link>
+            <Link
+              href="/leaderboard"
+              className={`hover:text-[#89f336] ${isCurrentPage("/leaderboard") ? "text-[#89f336]" : "text-white"}`}
+            >
+              Leaderboard
+            </Link>
+          </nav>
 
           {/* Right: Profile Icon */}
           <Link href="/profile">
