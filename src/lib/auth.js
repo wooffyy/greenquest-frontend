@@ -109,7 +109,7 @@ export async function logout() {
 }
 
 export async function register({ fullname, username, email, password }) {
-  const res = await api.post("/users/register", {
+  const res = await api.post("/register", {
     fullname,
     username,
     email,
