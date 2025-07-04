@@ -129,7 +129,7 @@ export default function Main() {
         {/* Right Column (2/8) - Streak & Daily Quest */}
         <aside className="hidden md:flex col-span-2 flex-col gap-4">
           <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:scale-105 hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
-            <div className="text-4xl font-bold">42</div>
+            <div className="text-4xl font-bold">0</div>
             <div className="text-sm font-semibold">DAYS</div>
           </div>
 

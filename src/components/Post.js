@@ -37,8 +37,8 @@ function Post({ isOpen, onClose }) {
       alert("Post uploaded successfully!");
       onClose();
     } catch (err) {
+      console.error("Upload failed:", err.response?.data || err.message);
       alert("Failed to upload post.");
-      console.error(err);
     } finally {
       setLoading(false);
     }
