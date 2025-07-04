@@ -19,7 +19,7 @@ export default function ProfileInfo({ user, isMobile = false }) {
         {/* Edit Profile Button for Mobile */}
         <Link
           href="/profile/edit"
-          className="mt-4 bg-white font-semibold text-black w-full text-center px-4 py-2 rounded-lg hover:bg-slate-100 transition-all border max-w-xs"
+          className="mt-4 bg-white font-semibold text-black w-full text-center px-4 py-2 rounded-lg hover:bg-slate-100 transition-all border max-w-[120px]"
         >
           Edit Profile
         </Link>
@@ -51,7 +51,7 @@ export default function ProfileInfo({ user, isMobile = false }) {
       </div>
 
       {/* Streak Display */}
-      <div className="col-span-2 flex-col max-w-[240px] justify-center md:justify-start items-start">
+      <div className="col-span-2 flex-col justify-center md:justify-start items-start max-w-[240px]">
         <div className="bg-[#89F336] font-bold text-black rounded-xl flex items-center justify-center w-full max-w-[240px]">
           <div className="p-4 text-5xl md:text-7xl">{user.streak ?? 0}</div>
           <div className="p-4 text-lg md:text-xl">DAYS STREAK!</div>
