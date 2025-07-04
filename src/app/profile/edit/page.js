@@ -91,7 +91,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundImage: "url('/images/bg-edit.jpg')" }} bg-cover bg-center text-white>
+    <div className="min-h-screen bg-cover bg-center text-white" style={{ backgroundImage: "url('/images/bg-edit.jpg')" }}>
       <ProfileHeader
         isSidebarOpen={isSidebarOpen}
         setSidebarOpen={setIsSidebarOpen}
