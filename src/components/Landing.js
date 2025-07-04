@@ -1,10 +1,12 @@
 'use client';
 
-import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+
+import { login } from '@/lib/auth';
+
 
 const Heading = ({ children }) => (
   <h2 className="text-2xl font-bold mb-8 text-center">{children}</h2>
@@ -13,7 +15,7 @@ const Heading = ({ children }) => (
 export default function Landing({ mode }) {
   const router = useRouter();
   const params = useSearchParams();
-  const [error, setError] = useState(params.get('error'));
+  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const isLogin = mode === 'login';
@@ -21,7 +23,23 @@ export default function Landing({ mode }) {
   // LOGIN (langsung redirect)
   const handleLogin = async (e) => {
     e.preventDefault();
-    router.push('/profile'); // langsung redirect saja
+    const body = Object.fromEntries(new FormData(e.target));
+    if (!username || !password) {
+      setError("Username and password are required.");
+      return;
+    }
+
+    try {
+      const { token, user } = await login(body);
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      router.push("/dashboard"); // Redirect to dashboard
+    } catch (error) {
+      console.error(error);
+      setError("Login Failed! Please check your username and password");
+    }
   };
 
   // REGISTER (simulasi + langsung redirect)
@@ -83,21 +101,40 @@ export default function Landing({ mode }) {
                 </div>
               )}
 
-              {/* Email Field */}
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  required
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
-                  placeholder="Enter your email"
-                />
-              </div>
+              {/* Username Field (Only for Login) */}
+              {isLogin && (
+                <div>
+                  <label htmlFor="username" className="block text-sm font-medium text-black mb-2">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
+                    placeholder="Enter your username"
+                  />
+                </div>
+              )}
 
+              {/* Email Field (Only for register)*/}
+              {!isLogin && (
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-black mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
+                    placeholder="Enter your email"
+                  />
+                </div>
+              )}
+              
               {/* Password Field */}
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-black mb-2">

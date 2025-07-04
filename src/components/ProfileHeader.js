@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Sidebar from '@/components/Sidebar';
 
 export default function ProfileHeader({ isSidebarOpen, setSidebarOpen }) {
+
   return (
     <>
       <nav className="bg-black border-b border-[#1a1a1a] text-white w-full sticky top-0 z-40 px-4 sm:px-6 py-4">
@@ -37,19 +38,19 @@ export default function ProfileHeader({ isSidebarOpen, setSidebarOpen }) {
           <nav className="absolute left-1/2 transform -translate-x-1/2 space-x-6 hidden md:flex">
             <Link
               href="/dashboard"
-              className={`hover:text-[#89f336] ${isCurrentPage("/dashboard") ? "text-[#89f336]" : "text-white"}`}
+              className="hover:text-[#89f336] text-white"
             >
               Dashboard
             </Link>
             <Link
               href="/challenge"
-              className={`hover:text-[#89f336] ${isCurrentPage("/challenge") ? "text-[#89f336]" : "text-white"}`}
+              className="hover:text-[#89f336] text-white"
             >
               Challenge
             </Link>
             <Link
               href="/leaderboard"
-              className={`hover:text-[#89f336] ${isCurrentPage("/leaderboard") ? "text-[#89f336]" : "text-white"}`}
+              className="hover:text-[#89f336] text-white"
             >
               Leaderboard
             </Link>

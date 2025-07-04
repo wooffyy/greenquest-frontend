@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import ProfileHeader from "@/components/ProfileHeader";
 import ProfileInfo from "@/components/ProfileInfo";
@@ -9,18 +9,34 @@ import StatsCard from "@/components/StatsCard";
 import BadgesSection from "@/components/BadgesSection";
 import BadgesModal from "@/components/BadgesModal";
 
+import { getUserById } from "@/lib/auth";
+import { useRouter } from "next/navigation";
+
 export default function GalleryPage() {
+    const router = useRouter();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [isBadgeModalOpen, setBadgeModalOpen] = useState(false);
+    const [user, setUser] = useState(null);
 
-    const userData = {
-        name: "Mas Jawa",
-        username: "masjava",
-        desktopUsername: "masjava",
-        location: "Depok, Indonesia",
-        streak: 42,
-        ecoPoints: 1259
-    };
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        const userData = JSON.parse(localStorage.getItem("user"));
+
+        if (!token || !userData) {
+            router.push("/auth/login");
+            return;
+        }
+
+        getUserById(userData.id, token)
+            .then((data) => {
+                 setUser(data.user);
+                 setPosts(data.posts);
+            })
+            .catch((err) => {
+                console.error("Failed to fetch user data", err);
+                router.push("/auth/login");
+            });
+    }, []);
 
     // DUMMY BADGES
     const badges = [
@@ -28,6 +44,8 @@ export default function GalleryPage() {
         "Photographer", "Art Curator", "Water Saver", "Green Commuter", 
         "Eco Warrior", "Plant Master", "Solar Champion", "Recycling Hero"
     ];
+
+    if (!user) return <div className="text-white text-center p-8">Loading profile...</div>;
 
     return (
         <>
@@ -50,35 +68,32 @@ export default function GalleryPage() {
             {/* Mobile Layout */}
             <div className="md:hidden bg-black min-h-screen text-white">
                 {/* Profile Section */}
-                <ProfileInfo user={userData} isMobile={true} />
+                <ProfileInfo user={user} isMobile={true} />
 
                 {/* Stats and Streak Grid */}
                 <MobileStatsGrid 
-                    streak={userData.streak}
-                    ecoPoints={userData.ecoPoints}
+                    streak={user.streak}
+                    ecoPoints={user.ecoPoints}
                     badges={badges}
                     onShowAllBadges={() => setBadgeModalOpen(true)}
                 />
 
                 {/* Post User Section */}
-                <PostSection isMobile={true} />
+                <PostSection posts={posts} isMobile={true} />
             </div>
 
             {/* Desktop Layout */}
             <div className="hidden md:block bg-black min-h-screen text-white">
                 {/* Profile Info */}
-                <ProfileInfo user={{
-                    ...userData,
-                    username: userData.desktopUsername
-                }} isMobile={false} />
+                <ProfileInfo user={user} isMobile={false} />
 
                 {/* Post + Stats */}
                 <section className="grid grid-cols-6 gap-4 mt-16 px-4 md:px-36 items-start">
-                    <PostSection isMobile={false} />
+                    <PostSection posts={posts} isMobile={false} />
                     
                     {/* Stats Section */}
                     <div className="col-span-2 flex flex-col gap-4">
-                        <StatsCard ecoPoints={userData.ecoPoints} />
+                        <StatsCard ecoPoints={user.ecoPoints} />
                         <BadgesSection badges={badges} />
                     </div>
                 </section>
