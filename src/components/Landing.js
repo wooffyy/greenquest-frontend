@@ -1,12 +1,12 @@
 'use client';
 
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
-import { login } from '@/lib/auth';
-
+import { login, register } from '@/lib/auth';
 
 const Heading = ({ children }) => (
   <h2 className="text-2xl font-bold mb-8 text-center">{children}</h2>
@@ -15,7 +15,7 @@ const Heading = ({ children }) => (
 export default function Landing({ mode }) {
   const router = useRouter();
   const params = useSearchParams();
-  const [error, setError] = useState("");
+  const [error, setError] = useState(params.get('error'));
   const [showPassword, setShowPassword] = useState(false);
 
   const isLogin = mode === 'login';
@@ -24,10 +24,6 @@ export default function Landing({ mode }) {
   const handleLogin = async (e) => {
     e.preventDefault();
     const body = Object.fromEntries(new FormData(e.target));
-    if (!username || !password) {
-      setError("Username and password are required.");
-      return;
-    }
 
     try {
       const { token, user } = await login(body);
@@ -35,21 +31,29 @@ export default function Landing({ mode }) {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
-      router.push("/dashboard"); // Redirect to dashboard
+      router.push("/dashboard");
     } catch (error) {
       console.error(error);
       setError("Login Failed! Please check your username and password");
     }
   };
 
-  // REGISTER (simulasi + langsung redirect)
+  // REGISTER
   const handleRegister = async (e) => {
     e.preventDefault();
     const body = Object.fromEntries(new FormData(e.target));
 
-    // Simulasi request sukses
-    console.log('Registered user:', body);
-    router.push('/profile');
+    try {
+      await register(body);
+      router.push('/dashboard');
+    } catch (error) {
+      console.error(error);
+      const message =
+        error.response?.data?.error?.username?.[0] ??
+        error.response?.data?.message ??
+        "Registration failed";
+      setError(message);
+    }
   };
 
   return (
@@ -57,11 +61,7 @@ export default function Landing({ mode }) {
       {/* Logo */}
       <Link
         href="/"
-        className="
-          text-2xl font-semibold text-[#89F336] drop-shadow-sm z-10
-          absolute top-4 left-1/2 transform -translate-x-1/2
-          md:left-6 md:translate-x-0
-        "
+        className="text-2xl font-semibold text-[#89F336] drop-shadow-sm z-10 absolute top-4 left-1/2 transform -translate-x-1/2 md:left-6 md:translate-x-0"
       >
         ecochallenge
       </Link>
@@ -84,7 +84,7 @@ export default function Landing({ mode }) {
             <Heading>{isLogin ? 'Sign In' : 'Sign Up'}</Heading>
             
             <form onSubmit={isLogin ? handleLogin : handleRegister} className="space-y-6">
-              {/* Full Name Field (Only for Register) */}
+              {/* Full Name Field */}
               {!isLogin && (
                 <div>
                   <label htmlFor="fullname" className="block text-sm font-medium text-black mb-2">
@@ -101,8 +101,8 @@ export default function Landing({ mode }) {
                 </div>
               )}
 
-              {/* Username Field (Only for Login) */}
-              {isLogin && (
+              {/* Username Field */}
+              {!isLogin && (
                 <div>
                   <label htmlFor="username" className="block text-sm font-medium text-black mb-2">
                     Username
@@ -135,6 +135,23 @@ export default function Landing({ mode }) {
                 </div>
               )}
               
+              {/* Username Field (Only for Login) */}
+              {isLogin && (
+                <div>
+                  <label htmlFor="username" className="block text-sm font-medium text-black mb-2">
+                    Username
+                  </label>
+                  <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    required
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
+                    placeholder="Enter your username"
+                  />
+                </div>
+              )}
+
               {/* Password Field */}
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-black mb-2">

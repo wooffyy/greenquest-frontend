@@ -2,27 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import ResponsiveHeader from '@/components/ResponsiveHeader';
-import axios from 'axios';
+import { getLeaderboard } from '@/lib/api_leaderboard';
 
 export default function LeaderboardPage() {
   const [users, setUsers] = useState([]);
 
-  const apiURL =
-    process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:8000/api';
-
   useEffect(() => {
-    axios
-      .get(`${apiURL}/leaderboard`)
-      .then((res) => {
-        /* ❸ Backend sekarang membungkus data di properti data */
-        const list = res.data.data ?? res.data;
-        const sorted = list
-          .sort((a, b) => b.points - a.points)
-          .slice(0, 10);
-        setUsers(sorted);
-      })
-      .catch((err) => console.error('Leaderboard fetch failed:', err));
-  }, [apiURL]);
+    getLeaderboard().then(setUsers);
+  }, []);
 
   if (users.length < 3)
     return (

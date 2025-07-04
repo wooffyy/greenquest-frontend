@@ -8,18 +8,34 @@ import PostCards from "@/components/PostCards";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
 
+import { getLeaderboard } from "@/lib/api_leaderboard";
+
 export default function Main() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [topUsers, setTopUsers] = useState([]);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const leaderboardBg = {
+    1: "bg-yellow-300 text-black",
+    2: "bg-gray-300 text-black",
+    3: "bg-amber-600 text-white",
+    default: "bg-white text-black hover:scale-110",
+  }
 
   useEffect(() => {
     getAllPosts()
       .then((data) => setPosts(data))
       .catch((err) => console.error("Error fetching posts:", err));
+  }, []);
+
+  useEffect(() => {
+    getLeaderboard().then((data) =>{
+      setTopUsers(data.slice(0, 5));
+    });
   }, []);
 
   return (
@@ -46,14 +62,39 @@ export default function Main() {
         <aside className="hidden md:flex col-span-2 bg-[#89F336] text-black p-4 rounded-xl flex-col justify-between hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300">
           <div>
             <div className="font-semibold mb-4">LEADERBOARD</div>
-            <ol className="space-y-4 my-8">
-              <li className="bg-yellow-300 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">1</li>
-              <li className="bg-gray-300 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold">2</li>
-              <li className="bg-amber-600 w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold text-white">3</li>
-              <li className="bg-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold hover:scale-110">4</li>
-              <li className="bg-white w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold hover:scale-110">5</li>
-            </ol>
+            {topUsers.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center">Loading leaderboard…</p>
+            ) : (
+              <ol className="space-y-4 my-4">
+                {topUsers.map((user, index) => (
+                  <li key={user.id} className="flex items-center gap-4">
+                    {/* Rank Badge */}
+                    <div
+                      className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold ${
+                        leaderboardBg[index + 1] || leaderboardBg.default
+                      }`}
+                    >
+                      {index + 1}
+                    </div>
+                    
+                    {/* User Info */}
+                    <div className="flex-1 truncate">
+                      <p className="text-sm font-medium truncate">
+                        {user.fullname}
+                      </p>
+                      <p className="text-xs text-[#567761] truncate">
+                        @{user.username}
+                      </p>
+                    </div>
+                    
+                    {/* Points */}
+                    <div className="text-sm font-semibold">{user.points}</div>
+                  </li>
+                ))}
+              </ol>
+            )}
           </div>
+
           <Link
             href="/leaderboard"
             className="bg-white mt-6 h-8 rounded-full font-semibold flex items-center justify-center hover:scale-105 hover:bg-gray-100 hover:shadow-md transition-all duration-300 ease-in-out"
@@ -66,7 +107,7 @@ export default function Main() {
         <section className="w-full col-span-4 bg-[#2a2929] rounded-xl p-4 flex flex-col gap-4 hover:bg-[#323232] hover:shadow-lg hover:shadow-white/5 transition-all duration-300">
           {/* Input Post */}
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#89F336] text-black font-semibold hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200">
+            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-[#89F336] text-black font-semibold hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200">
               A
             </div>
             <button 

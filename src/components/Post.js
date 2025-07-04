@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { uploadPost } from "@/lib/api_post";
+import { Image } from 'lucide-react'
 
 function Post({ isOpen, onClose }) {
   const [imageFile, setImageFile] = useState(null);
@@ -65,10 +66,10 @@ function Post({ isOpen, onClose }) {
               <img src={previewUrl} alt="preview" className="w-full h-full object-cover rounded-2xl" />
             ) : (
               <div className="flex flex-col items-center gap-2">
-                <div className="w-12 h-12 bg-white rounded flex items-center justify-center">
-                  <img src="/photo.svg" alt="icon" className="w-6 h-6" />
+                <div className="opacity-50 flex items-center justify-center">
+                  <Image />
                 </div>
-                <span className="text-white text-sm">Upload your eco-activity photo</span>
+                <span className="text-[#8b8b8b] text-sm">Upload your eco-activity photo</span>
               </div>
             )}
             <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
@@ -80,7 +81,7 @@ function Post({ isOpen, onClose }) {
             placeholder="Add some captions"
             value={caption}
             onChange={handleCaptionChange}
-            className="w-full p-3 rounded-lg bg-gray-600 text-white placeholder-gray-300 border-none outline-none"
+            className="w-full p-3 rounded-lg bg-[#383838] text-white placeholder-gray-300 border-none outline-none"
           />
 
           {/* Upload Button */}
