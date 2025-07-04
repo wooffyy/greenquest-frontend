@@ -34,7 +34,7 @@ export default function GalleryPage() {
         getUserById()
             .then((res) => {
                  setUser(res.user);
-                 setPosts(res.post);
+                 setPosts(res.posts);
             })
             .catch((err) => {
                 console.error("Failed to fetch user data", err);
@@ -83,7 +83,7 @@ export default function GalleryPage() {
                 />
 
                 {/* Post User Section */}
-                <PostSection posts={posts} isMobile={true} />
+                <PostSection user={user} posts={posts} isMobile={true} />
             </div>
 
             {/* Desktop Layout */}
@@ -93,7 +93,7 @@ export default function GalleryPage() {
 
                 {/* Post + Stats */}
                 <section className="grid grid-cols-6 gap-4 mt-16 px-4 md:px-36 items-start">
-                    <PostSection posts={posts} isMobile={false} />
+                    <PostSection posts={posts} user={user} isMobile={false} />
                     
                     {/* Stats Section */}
                     <div className="col-span-2 flex flex-col gap-4">

@@ -1,7 +1,7 @@
 "use client";
 import PostCards from "./PostCards";
 
-export default function PostSection({ posts = [], isMobile = false }) {
+export default function PostSection({ posts = [], isMobile = false, user }) {
   if (isMobile) {
     return (
       <div className="px-4">
@@ -9,7 +9,7 @@ export default function PostSection({ posts = [], isMobile = false }) {
           {posts.length === 0 ? (
             <p className="text-sm text-gray-400 text-center">No posts yet.</p>
           ) : (
-            posts.map((post) => <PostCards key={post.id} post={post} />)
+            posts.map((post) => <PostCards key={post.id} user={user} post={post} />)
           )}
         </div>
       </div>
@@ -21,7 +21,7 @@ export default function PostSection({ posts = [], isMobile = false }) {
       {posts.length === 0 ? (
         <p className="text-sm text-gray-400 text-center">No posts yet.</p>
       ) : (
-        posts.map((post) => <PostCards key={post.id} post={post} />)
+        posts.map((post) => <PostCards key={post.id} user={user} post={post} />)
       )}
     </div>
   );

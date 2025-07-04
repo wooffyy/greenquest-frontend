@@ -1,7 +1,7 @@
 import { reportPost } from "@/lib/api_report";
 
 function postReport({ type, onClick }) {
-  reportPost({ postId, username, type });
+  reportPost({ username,  postId, type });
   alert(`Thanks for your report`);
   onClick();
 }
@@ -20,11 +20,11 @@ export default function Report({ postId, username, onClose }) {
 
         <div className="flex flex-col items-center gap-6 text-white">
           <h2 className="text-xl font-semibold">Why are you report this post?</h2>
-          <button onClick={() => postReport({ type: 'NOT_ECO_ACTIVITY', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post is not an eco-activities</button>
-          <button onClick={() => postReport({ type: 'HATE_SPEECH', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post contains hate speech</button>
-          <button onClick={() => postReport({ type: 'MISINFORMATION', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post contains misinformation </button>
-          <button onClick={() => postReport({ type: 'NUDITY', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post contains nudity</button>
-          <button onClick={() => postReport({ type: 'ILLEGAL_ACTIVITY', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post contains illegal activities</button>              
+          <button onClick={() => postReport({ username:username, postId:postId, type: 'NOT_ECO_ACTIVITY', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post is not an eco-activities</button>
+          <button onClick={() => postReport({ username:username, postId:postId, type: 'HATE_SPEECH', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post contains hate speech</button>
+          <button onClick={() => postReport({ username:username, postId:postId, type: 'MISINFORMATION', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post contains misinformation </button>
+          <button onClick={() => postReport({ username:username, postId:postId, type: 'NUDITY', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post contains nudity</button>
+          <button onClick={() => postReport({ username:username, postId:postId, type: 'ILLEGAL_ACTIVITY', onClick: onClose })} className="w-full px-4 py-2 rounded-lg hover:bg-[#121111] transition">This post contains illegal activities</button>              
         </div>
       </div>
     </div>
