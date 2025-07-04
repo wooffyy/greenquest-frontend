@@ -26,11 +26,7 @@ export default function Landing({ mode }) {
     const body = Object.fromEntries(new FormData(e.target));
 
     try {
-      const { token, user } = await login(body);
-
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-
+      await login(body);
       router.push("/dashboard");
     } catch (error) {
       console.error(error);
