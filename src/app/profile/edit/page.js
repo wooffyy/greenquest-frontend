@@ -22,7 +22,7 @@ export default function ProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
+    const storedUser = JSON.parse(localStorage.getItem('userProfile'));
     if (!storedUser) {
       router.push('/auth/login');
       return;
