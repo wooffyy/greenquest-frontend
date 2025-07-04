@@ -8,29 +8,33 @@ import PostSection from "@/components/PostSection";
 import StatsCard from "@/components/StatsCard";
 import BadgesSection from "@/components/BadgesSection";
 import BadgesModal from "@/components/BadgesModal";
+import Cookies from "universal-cookie";
 
 import { getUserById } from "@/lib/auth";
 import { useRouter } from "next/navigation";
+
+const cookies = new Cookies()
 
 export default function GalleryPage() {
     const router = useRouter();
     const [isSidebarOpen, setSidebarOpen] = useState(false);
     const [isBadgeModalOpen, setBadgeModalOpen] = useState(false);
     const [user, setUser] = useState(null);
+    const [posts, setPosts] = useState(null);
 
     useEffect(() => {
-        const token = localStorage.getItem("token");
-        const userData = JSON.parse(localStorage.getItem("user"));
+        const token = cookies.get("Authorization");
+        const userData = JSON.parse(localStorage.getItem("userProfile"));
 
         if (!token || !userData) {
             router.push("/auth/login");
             return;
         }
 
-        getUserById(userData.id, token)
-            .then((data) => {
-                 setUser(data.user);
-                 setPosts(data.posts);
+        getUserById()
+            .then((res) => {
+                 setUser(res.user);
+                 setPosts(res.post);
             })
             .catch((err) => {
                 console.error("Failed to fetch user data", err);

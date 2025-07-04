@@ -40,7 +40,6 @@ export async function login(payload) {
     });
 
     const userData = profileRes.data.user;
-    console.log(userData);
     
     // Simpan profil ke localStorage
     localStorage.setItem("userProfile", JSON.stringify(userData));

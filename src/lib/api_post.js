@@ -1,5 +1,7 @@
 import api from "./api";
+import Cookies from "universal-cookie";
 
+const cookies = new Cookies()
 export async function uploadPost(imageFile, caption) {
   const formData = new FormData();
   formData.append("image", imageFile);
@@ -13,16 +15,34 @@ export async function uploadPost(imageFile, caption) {
 }
 
 export async function getAllPosts() {
-  const res = await api.get("/posts");
+  const token = cookies.get("Authorization")
+  const res = await api.get("/posts",{
+    headers:
+    {
+      "Authorization" : `Bearer ${token}`
+    }
+  });
   return res.data;
 }
 
 export async function likePost(postId) {
-  const res = await api.post(`/posts/${postId}/like`);
+  const token = cookies.get("Authorization")
+  const res = await api.post(`/posts/${postId}/like`,{
+    headers:
+    {
+      "Authorization" : `Bearer ${token}`
+    }
+  });
   return res.data;
 }
 
 export async function dislikePost(postId) {
-  const res = await api.post(`/posts/${postId}/dislike`);
+  const token = cookies.get("Authorization")
+  const res = await api.post(`/posts/${postId}/dislike`,{
+    headers:
+    {
+      "Authorization" : `Bearer ${token}`
+    }
+  });
   return res.data;
 }
