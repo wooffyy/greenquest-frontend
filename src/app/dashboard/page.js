@@ -15,6 +15,7 @@ export default function Main() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [posts, setPosts] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
+  const [user, setUser] = useState({});
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -50,9 +51,13 @@ export default function Main() {
         </div>
         <Link
           href="/profile"
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-[#89F336] text-black font-semibold hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200 cursor-pointer"
+          className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200 cursor-pointer"
         >
-          A
+          {user.photo ? (
+            <img src={`data:image/jpeg;base64,${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
+          ) : (
+            <img src="/pfp.svg" alt="profile picture" className="w-10 h-10 p-2 rounded-full bg-[#1a1a1a]" />
+          )}
         </Link>
       </header>
 
@@ -107,9 +112,16 @@ export default function Main() {
         <section className="w-full col-span-4 bg-[#2a2929] rounded-xl p-4 flex flex-col gap-4 hover:bg-[#323232] hover:shadow-lg hover:shadow-white/5 transition-all duration-300">
           {/* Input Post */}
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 flex items-center justify-center rounded-full bg-[#89F336] text-black font-semibold hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200">
-              A
-            </div>
+            <Link
+              href="/profile"
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200 cursor-pointer"
+            >
+              {user.photo ? (
+                <img src={`data:image/jpeg;base64,${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
+              ) : (
+                <img src="/pfp.svg" alt="profile picture" className="w-10 h-10 p-2 rounded-full bg-[#1a1a1a]" />
+              )}
+            </Link>
             <button 
               onClick={openModal}
               className="w-full rounded-lg h-10 bg-white text-black hover:scale-[1.01] transition-all duration-200 ease-in-out"
@@ -122,13 +134,13 @@ export default function Main() {
           {posts.length === 0 ? (
             <p className="text-white text-sm">No posts yet.</p>
           ) : (
-            posts.map((post) => <PostCards key={post.id} post={post} />)
+            posts.map((post) => <PostCards key={post.id} post={post} user={post.user}/>)
           )}
         </section>
 
         {/* Right Column (2/8) - Streak & Daily Quest */}
         <aside className="hidden md:flex col-span-2 flex-col gap-4">
-          <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:scale-105 hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
+          <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
             <div className="text-4xl font-bold">0</div>
             <div className="text-sm font-semibold">DAYS</div>
           </div>
@@ -162,3 +174,4 @@ export default function Main() {
     </div>
   );
 }
+

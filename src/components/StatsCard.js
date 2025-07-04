@@ -11,11 +11,8 @@ export default function StatsCard({ ecoPoints, isMobile = false }) {
 
     return (
         <div className="bg-[#2a2a2a] rounded-xl p-6">
-            <h2 className="text-xl font-semibold text-center mb-4">Stats</h2>
-            <div className="bg-[#232323] rounded-xl p-6 text-center">
-                <div className="text-6xl font-bold text-[#89F336]">{ecoPoints}</div>
-                <div className="text-sm font-semibold mt-2">Eco Points</div>
-            </div>
+            <div className="text-6xl font-bold text-[#89F336]">{ecoPoints}</div>
+            <div className="text-sm font-semibold mt-2">Eco Points</div>
         </div>
     );
 }

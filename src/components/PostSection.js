@@ -17,7 +17,7 @@ export default function PostSection({ posts = [], isMobile = false, user }) {
   }
 
   return (
-    <div className="col-span-4 bg-[#2a2929] rounded-xl p-4 flex flex-col gap-4 hover:bg-[#323232] hover:shadow-lg hover:shadow-white/5 transition-all duration-300">
+    <div className="bg-[#2a2929] rounded-xl p-4 flex flex-col gap-4 hover:bg-[#323232] hover:shadow-lg hover:shadow-white/5 transition-all duration-300">
       {posts.length === 0 ? (
         <p className="text-sm text-gray-400 text-center">No posts yet.</p>
       ) : (

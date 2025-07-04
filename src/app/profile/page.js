@@ -91,15 +91,8 @@ export default function GalleryPage() {
                 {/* Profile Info */}
                 <ProfileInfo user={user} isMobile={false} />
 
-                {/* Post + Stats */}
-                <section className="grid grid-cols-6 gap-4 mt-16 px-4 md:px-36 items-start">
+                <section className="items-center w-full max-w-[1200px] lg:max-w-[1400px] gap-4 mt-16 px-4 md:px-36 mx-auto">
                     <PostSection posts={posts} user={user} isMobile={false} />
-                    
-                    {/* Stats Section */}
-                    <div className="col-span-2 flex flex-col gap-4">
-                        <StatsCard ecoPoints={user.ecoPoints} />
-                        <BadgesSection badges={badges} />
-                    </div>
                 </section>
             </div>
         </>

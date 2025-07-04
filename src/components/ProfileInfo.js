@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import StatsCard from "./StatsCard";
 
 export default function ProfileInfo({ user, isMobile = false }) {
   const profilePic = user.photo
@@ -38,7 +39,7 @@ export default function ProfileInfo({ user, isMobile = false }) {
       {/* User Info */}
       <div className="flex flex-col justify-start px-0 md:px-12 col-span-3 text-center md:text-left">
         <h1 className="text-3xl md:text-4xl font-bold text-white">{user.fullname}</h1>
-        <div className="flex flex-col md:flex-row gap-1 md:gap-4 text-sm text-slate-500 font-light mt-1 items-center md:items-start">
+        <div className="flex flex-col md:flex-row gap-1 md:gap-4 text-xl text-slate-500 font-light mt-1 items-center md:items-start">
           <span>@{user.username}</span>
         </div>
         <Link
@@ -50,11 +51,12 @@ export default function ProfileInfo({ user, isMobile = false }) {
       </div>
 
       {/* Streak Display */}
-      <div className="col-span-2 flex justify-center md:justify-start items-start">
+      <div className="col-span-2 flex-col max-w-[240px] justify-center md:justify-start items-start">
         <div className="bg-[#89F336] font-bold text-black rounded-xl flex items-center justify-center w-full max-w-[240px]">
           <div className="p-4 text-5xl md:text-7xl">{user.streak ?? 0}</div>
           <div className="p-4 text-lg md:text-xl">DAYS STREAK!</div>
         </div>
+        <StatsCard ecoPoints={user.ecoPoints ?? 0} className="mt-4" />
       </div>
     </section>
   );

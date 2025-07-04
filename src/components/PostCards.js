@@ -51,7 +51,7 @@ function ReportButton({ post, user }) {
       {isOpen && (
         <Report
           postId={post.id}
-          username={user.username}
+          username={user?.username}
           onClose={() => setIsOpen(false)}
         />
       )}
@@ -60,6 +60,9 @@ function ReportButton({ post, user }) {
 }
 
 export default function PostCards({ post, user }) {
+  // Add this debugging
+  console.log('PostCards props:', { post, user });
+  console.log('User username:', user?.username);
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
@@ -109,17 +112,21 @@ export default function PostCards({ post, user }) {
 
   return (
     <div className="bg-white text-black rounded-xl p-4">
-      {/* User Info */}
+    {/* User Info */}
       <div className="flex items-center gap-2 mb-2">
-        <img
-          src={`data:image/jpeg;base64,${user.photo}`}
-          alt={user.username}
-          className="w-8 h-8 rounded-full object-cover"
-        />
-        <span className="font-medium">{user.username}</span>
-        <span className="text-sm text-gray-600 ml-auto right-4">
+        {user?.photo ? (
+          <img
+            src={`data:image/jpeg;base64,${user.photo}`}
+            alt={user?.username}
+            className="w-8 h-8 rounded-full object-cover"
+          />
+        ) : (
+          <img src="/pfp.svg" className="w-8 h-8 p-2 rounded-full bg-black" />
+        )}
+        <span className="font-medium text-black">{user?.username}</span>
+        <div className="text-sm text-gray-600 ml-auto right-4">
           <ReportButton post={post} user={user} />
-        </span>
+        </div>
       </div>
 
       {/* Caption */}
