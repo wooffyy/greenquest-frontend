@@ -1,6 +1,7 @@
 // components/PostCards.js
 import { useState } from "react";
 import Report from "./Report";
+import { FiFlag } from "react-icons/fi";
 import { likePost, dislikePost } from "@/lib/api_post";
 
 function Like({ liked, setLiked, disliked, setDisliked, postId }) {
@@ -39,30 +40,27 @@ function Dislike({ disliked, setDisliked, liked, setLiked, postId }) {
 
   return (
     <button onClick={handleDislike} className="flex items-center gap-1">
-      <img
-        src={disliked ? "/disliked.svg" : "/dislike.svg"}
-        alt="dislike icon"
-        className="w-4 h-4"
-      />
+      <FiFlag className="w-4 h-4"/>
       <span className={disliked ? "text-black" : "text-gray-600"}>Dislikes</span>
     </button>
   );
 }
 
-function ReportButton({ report }) {
+function ReportButton({ post }) {
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleClick = () => {
-    setIsOpen(true);
-  };
-
   return (
     <>
-      <button onClick={handleClick} className="text-sm text-gray-600 flex items-center gap-1">
+      <button onClick={() => setIsOpen(true)} className="text-sm text-gray-600 flex items-center gap-1">
         <img src="/reportflag.svg" alt="report flag" className="w-4 h-4" />
         Report
       </button>
-      {isOpen && <Report isOpen={isOpen} onClose={() => setIsOpen(false)} />}
+      {isOpen && (
+        <Report
+          postId={post.id}
+          username={post.user.username}
+          onClose={() => setIsOpen(false)}
+        />
+      )}
     </>
   );
 }
@@ -81,7 +79,7 @@ export default function PostCards({ post }) {
           className="w-8 h-8 rounded-full object-cover"
         />
         <span className="font-medium">{post.user.username}</span>
-        <span className="text-sm text-gray-600 ml-auto right-4"><ReportButton /></span>
+        <span className="text-sm text-gray-600 ml-auto right-4"><ReportButton post={post} /></span>
       </div>
 
       {/* Caption */}

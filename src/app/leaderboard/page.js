@@ -7,7 +7,6 @@ import axios from 'axios';
 export default function LeaderboardPage() {
   const [users, setUsers] = useState([]);
 
-  // ❷ Gunakan ENV agar mudah dipindah server
   const apiURL =
     process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:8000/api';
 
@@ -32,7 +31,6 @@ export default function LeaderboardPage() {
       </div>
     );
 
-  /* ❹ Perbaiki sintaksis rest operator */
   const [first, second, third, ...rest] = users;
 
   return (
@@ -61,7 +59,7 @@ export default function LeaderboardPage() {
                   className="w-14 h-14 rounded-full bg-white object-cover"
                 />
                 <div>
-                  {/* ❺ Field backend = fullname  */}
+                  {/* Field backend = fullname  */}
                   <div className="text-md font-semibold">
                     {user.fullname}
                   </div>
