@@ -8,6 +8,10 @@ import PostCards from "@/components/PostCards";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
 import axios from 'axios';
+import api from "@/lib/api";
+import Cookies from "universal-cookie";
+
+const cookies = new Cookies();
 
 import { getLeaderboard } from "@/lib/api_leaderboard";
 
@@ -36,8 +40,14 @@ export default function Main() {
   }, []);
 
   useEffect(() => {
-  axios.get('/api/user')
-    .then(res => setStreak(res.data.streak))
+    const token = cookies.get("Authorization")
+  api.get('/users', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+    .then(res =>  setStreak(res.data.users.streak)
+  )
     .catch(err => {
       console.error("Gagal fetch streak:", err)
       setStreak(0)
