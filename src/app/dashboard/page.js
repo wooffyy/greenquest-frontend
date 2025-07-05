@@ -11,8 +11,12 @@ import Link from "next/link";
 import { getLeaderboard } from "@/lib/api_leaderboard";
 import { getDailyQuests } from "@/lib/api_quest";
 import { getUserById, getUserProfile } from "@/lib/auth";
-import { Circle } from "lucide-react";
+import { Circle, CircleCheck } from "lucide-react";
+import Cookies from "universal-cookie";
+import api from "@/lib/api";
 
+
+const cookies = new Cookies()
 // Helper function to get current user ID
 const getCurrentUserId = () => {
   if (typeof window === "undefined") return 'anonymous';
@@ -26,6 +30,8 @@ export default function Main() {
   const [posts, setPosts] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
   const [user, setUser] = useState({});
+  const [dailyQuests,setDailyQuests] = useState([])
+  const [completedQuests,setCompletedQuests] = useState([])
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -221,7 +227,6 @@ export default function Main() {
           <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
         <div className="text-4xl font-bold">{user.streak}</div>
         <div className="text-sm font-semibold">DAYS</div>
-        <div className="text-sm font-semibold">STREAK!</div>
       </div>
 
           <div className="bg-[#89F336] text-black p-4 rounded-xl flex flex-col justify-between h-full hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300">
