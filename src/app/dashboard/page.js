@@ -7,13 +7,18 @@ import Post from "@/components/Post";
 import PostCards from "@/components/PostCards";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
-import axios from 'axios';
-import api from "@/lib/api";
-import Cookies from "universal-cookie";
-
-const cookies = new Cookies();
 
 import { getLeaderboard } from "@/lib/api_leaderboard";
+import { getDailyQuests } from "@/lib/api_quest";
+import { getUserProfile } from "@/lib/auth";
+import { Circle } from "lucide-react";
+
+// Helper function to get current user ID
+const getCurrentUserId = () => {
+  if (typeof window === "undefined") return 'anonymous';
+  const userProfile = getUserProfile();
+  return userProfile?.id?.toString() || 'anonymous';
+};
 
 export default function Main() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,7 +26,6 @@ export default function Main() {
   const [posts, setPosts] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
   const [user, setUser] = useState({});
-  const [streak, setStreak] = useState(0)
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -32,6 +36,48 @@ export default function Main() {
     3: "bg-amber-600 text-white",
     default: "bg-white text-black hover:scale-110",
   }
+
+  // Load completed quests from localStorage
+  useEffect(() => {
+    const userId = getCurrentUserId();
+    const savedCompletedQuests = localStorage.getItem(`completedQuests_${userId}`);
+    if (savedCompletedQuests) {
+      setCompletedQuests(new Set(JSON.parse(savedCompletedQuests)));
+    }
+  }, []);
+
+  // Fetch daily quests
+  useEffect(() => {
+    async function fetchDailyQuests() {
+      try {
+        // Check if we have cached quests
+        const cached = localStorage.getItem("dailyQuests");
+        const cachedTime = localStorage.getItem("dailyQuestsTime");
+        const now = Date.now();
+
+        if (cached && cachedTime && (now - cachedTime) < 86400000) { // <24 hours
+          console.log("Using cached quests for dashboard");
+          setDailyQuests(JSON.parse(cached));
+        } else {
+          console.log("Fetching daily quests for dashboard");
+          const questsData = await getDailyQuests();
+          setDailyQuests(questsData);
+          localStorage.setItem("dailyQuests", JSON.stringify(questsData));
+          localStorage.setItem("dailyQuestsTime", now.toString());
+        }
+      } catch (error) {
+        console.error("Failed to fetch daily quests:", error);
+        // You can set fallback data here if needed
+        setDailyQuests([]);
+      }
+    }
+    fetchDailyQuests();
+  }, []);
+
+  // <CircleCheck /> if quest is completed
+  const isQuestCompleted = (questId) => {
+    return completedQuests.has(questId);
+  };
 
   useEffect(() => {
     getAllPosts()
@@ -75,7 +121,7 @@ export default function Main() {
           className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200 cursor-pointer"
         >
           {user.photo ? (
-            <img src={`data:image/jpeg;base64,${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
+            <img src={`http://localhost:8000/storage/${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
           ) : (
             <img src="/pfp.svg" alt="profile picture" className="w-10 h-10 p-2 rounded-full bg-[#1a1a1a]" />
           )}
@@ -138,7 +184,7 @@ export default function Main() {
               className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200 cursor-pointer"
             >
               {user.photo ? (
-                <img src={`data:image/jpeg;base64,${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
+                <img src={`http://localhost:8000/storage/${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
               ) : (
                 <img src="/pfp.svg" alt="profile picture" className="w-10 h-10 p-2 rounded-full bg-[#1a1a1a]" />
               )}
@@ -170,18 +216,27 @@ export default function Main() {
           <div className="bg-[#89F336] text-black p-4 rounded-xl flex flex-col justify-between h-full hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300">
             <div className="font-semibold mb-2">DAILY QUEST</div>
             <div className="flex flex-col gap-2 text-sm">
-              <div className="flex justify-between">
-                <span className="hover:font-semibold transition-all duration-200 cursor-pointer">Mission 1</span>
-              </div>
-              <div className="w-full h-4 bg-black rounded-full hover:bg-gray-800 transition-colors duration-200 cursor-pointer"></div>
-              <div className="flex justify-between">
-                <span className="hover:font-semibold transition-all duration-200 cursor-pointer">Mission 2</span>
-              </div>
-              <div className="w-full h-4 bg-black rounded-full hover:bg-gray-800 transition-colors duration-200 cursor-pointer"></div>
-              <div className="flex justify-between">
-                <span className="hover:font-semibold transition-all duration-200 cursor-pointer">Mission 3</span>
-              </div>
-              <div className="w-full h-4 bg-black rounded-full hover:bg-gray-800 transition-colors duration-200 cursor-pointer"></div>
+              {dailyQuests.length === 0 ? (
+                <div className="text-xs text-gray-600">Loading quests...</div>
+              ) : (
+                dailyQuests.slice(0, 3).map((quest, index) => (
+                  <div key={quest.id} className="flex flex-col gap-1">
+                    <div className="flex justify-between items-center">
+                      <span className="hover:font-semibold transition-all duration-200 cursor-pointer truncate flex-1 mr-2">
+                        {quest.quest || `Mission ${index + 1}`}
+                      </span>
+                      {isQuestCompleted(quest.id) ? (
+                        <CircleCheck className="w-4 h-4 text-green-600 flex-shrink-0" />
+                      ) : (
+                        <Circle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                      )}
+                    </div>
+                    <div className={`w-full h-2 rounded-full transition-colors duration-200 cursor-pointer ${
+                      isQuestCompleted(quest.id) ? 'bg-green-600' : 'bg-black hover:bg-gray-800'
+                    }`}></div>
+                  </div>
+                ))
+              )}
             </div>
             <Link href="/challenge" className="w-8 h-8 mt-8 ml-auto bg-white rounded-full flex items-center justify-center text-black font-bold hover:bg-gray-100 hover:scale-120 hover:shadow-md transition-all duration-200">
               →
@@ -196,4 +251,3 @@ export default function Main() {
     </div>
   );
 }
-

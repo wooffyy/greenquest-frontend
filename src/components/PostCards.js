@@ -50,7 +50,7 @@ function ReportButton({ post, user }) {
       </button>
       {isOpen && (
         <Report
-          postId={post.id}
+          post_id={post.id}
           username={user?.username}
           onClose={() => setIsOpen(false)}
         />
@@ -116,7 +116,7 @@ export default function PostCards({ post, user }) {
       <div className="flex items-center gap-2 mb-2">
         {user?.photo ? (
           <img
-            src={`data:image/jpeg;base64,${user.photo}`}
+            src={`http://localhost:8000/storage/${user.photo}`}
             alt={user?.username}
             className="w-8 h-8 rounded-full object-cover"
           />

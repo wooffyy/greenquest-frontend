@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { uploadPost } from "@/lib/api_post";
 import { Image } from 'lucide-react'
 
-function Post({ isOpen, onClose }) {
+function Post({ isOpen, onClose, onPostSuccess }) {
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   const [caption, setCaption] = useState("");
@@ -35,6 +35,12 @@ function Post({ isOpen, onClose }) {
       setPreviewUrl(null);
       setCaption("");
       alert("Post uploaded successfully!");
+      
+      // Call onPostSuccess if it exists (for quest completion)
+      if (onPostSuccess) {
+        onPostSuccess();
+      }
+      
       onClose();
     } catch (err) {
       console.error("Upload failed:", err.response?.data || err.message);

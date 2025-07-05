@@ -3,15 +3,12 @@ import Link from "next/link";
 import StatsCard from "./StatsCard";
 
 export default function ProfileInfo({ user, isMobile = false }) {
-  const profilePic = user.photo
-    ? `data:image/jpeg;base64,${user.photo}`
-    : "/pfp.svg";
 
   if (isMobile) {
     return (
       <div className="flex flex-col items-center pt-8 pb-6">
         <div className="w-20 h-20 bg-[#4a4a4a] rounded-full flex items-center justify-center mb-4 overflow-hidden">
-          <img src={profilePic} alt="profile picture" className="w-full h-full object-cover" />
+          <img src={`http://localhost:8000/storage/${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
         </div>
         <h1 className="text-xl font-bold">{user.fullname}</h1>
         <p className="text-sm text-slate-400">@{user.username}</p>
@@ -32,7 +29,7 @@ export default function ProfileInfo({ user, isMobile = false }) {
       {/* Profile Picture */}
       <div className="flex justify-center md:justify-end items-start col-span-1">
         <div className="w-32 h-32 md:w-48 md:h-48 bg-[#1a1a1a] p-2 rounded-full flex items-center justify-center overflow-hidden">
-          <img src={profilePic} alt="profile picture" className="w-full h-full object-cover" />
+          <img src={`http://localhost:8000/storage/${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
         </div>
       </div>
 
