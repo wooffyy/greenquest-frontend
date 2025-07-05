@@ -1,12 +1,13 @@
-// lib/report.js
 import api from "./api";
+import Cookies from "universal-cookie";
 
-export async function reportPost({ username, postId, type }) {
+const cookies = new Cookies()
+
+export async function reportPost({ postId, reason }) {
   const token = cookies.get("Authorization");  
-  const res = await api.post("/reports", {
-    username,
-    postId,
-    type,
+
+  const res = await api.post(`/posts/${postId}/report`, {
+    reason,
   }, {
     headers: {
       "Authorization": `Bearer ${token}` 
