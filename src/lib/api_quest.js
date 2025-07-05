@@ -15,8 +15,9 @@ export async function getDailyQuests() {
 // Complete quest
 export async function completeQuest(questId) {
   const token = cookies.get("Authorization");
-  const res = await api.post(`/quests/complete/${questId}`, {}, {
+  const res = await api.post(`/quests/${questId}/complete`, {}, {
     headers: { "Authorization": `Bearer ${token}` }
   });
   return res.data;
 }
+
