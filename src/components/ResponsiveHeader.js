@@ -1,14 +1,24 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Sidebar from '@/components/Sidebar';
+import { getUserById } from '@/lib/auth';
 
 export default function ResponsiveHeader() {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [user, setUser] = useState({});
   const pathname = usePathname();
-
   const isCurrent = (path) => pathname === path;
+
+  useEffect(() => {
+    async function fetchUser() {
+      // Replace '1' with the actual user ID as needed
+      const userData = await getUserById(1);
+      setUser(userData || {});
+    }
+    fetchUser();
+  }, []);
 
   return (
     <>
@@ -53,11 +63,16 @@ export default function ResponsiveHeader() {
             </Link>
           </div>
 
-          <Link href="/profile">
-            <div className="w-10 h-10 rounded-full border-2 border-green-400 bg-white overflow-hidden">
-              <img src="/images/default-avatar.jpg" alt="Profile" className="w-full h-full object-cover" />
-            </div>
-          </Link>
+           <Link
+              href="/profile"
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200 cursor-pointer"
+            >
+              {user.photo ? (
+                <img src={`data:image/jpeg;base64,${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
+              ) : (
+                <img src="/pfp.svg" alt="profile picture" className="w-10 h-10 p-2 rounded-full bg-[#1a1a1a]" />
+              )}
+            </Link>
         </div>
       </nav>
 

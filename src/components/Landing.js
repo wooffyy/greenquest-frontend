@@ -26,8 +26,12 @@ export default function Landing({ mode }) {
     const body = Object.fromEntries(new FormData(e.target));
 
     try {
-      await login(body);
-      router.push("/dashboard");
+      const result = await login(body); 
+      if (result.success) {
+        router.push("/dashboard");
+      } else {
+        setError(result.message);
+      } 
     } catch (error) {
       console.error(error);
       setError("Login Failed! Please check your username and password");
