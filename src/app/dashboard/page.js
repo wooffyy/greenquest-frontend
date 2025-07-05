@@ -7,6 +7,7 @@ import Post from "@/components/Post";
 import PostCards from "@/components/PostCards";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
+import axios from 'axios';
 
 import { getLeaderboard } from "@/lib/api_leaderboard";
 
@@ -16,6 +17,7 @@ export default function Main() {
   const [posts, setPosts] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
   const [user, setUser] = useState({});
+  const [streak, setStreak] = useState(0)
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -32,6 +34,15 @@ export default function Main() {
       .then((data) => setPosts(data))
       .catch((err) => console.error("Error fetching posts:", err));
   }, []);
+
+  useEffect(() => {
+  axios.get('/api/user')
+    .then(res => setStreak(res.data.streak))
+    .catch(err => {
+      console.error("Gagal fetch streak:", err)
+      setStreak(0)
+    })
+}, [])
 
   useEffect(() => {
     getLeaderboard().then((data) =>{
@@ -141,9 +152,10 @@ export default function Main() {
         {/* Right Column (2/8) - Streak & Daily Quest */}
         <aside className="hidden md:flex col-span-2 flex-col gap-4">
           <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
-            <div className="text-4xl font-bold">0</div>
-            <div className="text-sm font-semibold">DAYS</div>
-          </div>
+        <div className="text-4xl font-bold">{streak}</div>
+        <div className="text-sm font-semibold">DAYS</div>
+        <div className="text-sm font-semibold">STREAK!</div>
+      </div>
 
           <div className="bg-[#89F336] text-black p-4 rounded-xl flex flex-col justify-between h-full hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300">
             <div className="font-semibold mb-2">DAILY QUEST</div>
