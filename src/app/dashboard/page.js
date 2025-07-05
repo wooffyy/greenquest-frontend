@@ -92,21 +92,6 @@ export default function Main() {
   }, []);
 
   useEffect(() => {
-    const token = cookies.get("Authorization")
-  api.get('/users', {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
-  })
-    .then(res =>  setStreak(res.data.users.streak)
-  )
-    .catch(err => {
-      console.error("Gagal fetch streak:", err)
-      setStreak(0)
-    })
-}, [])
-
-  useEffect(() => {
     getLeaderboard().then((data) =>{
       setTopUsers(data.slice(0, 5));
     });
@@ -226,7 +211,7 @@ export default function Main() {
         <aside className="hidden md:flex col-span-2 flex-col gap-4">
           <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
         <div className="text-4xl font-bold">{user.streak}</div>
-        <div className="text-sm font-semibold">DAYS</div>
+        <div className="text-sm font-semibold">dailyQuests</div>
       </div>
 
           <div className="bg-[#89F336] text-black p-4 rounded-xl flex flex-col justify-between h-full hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300">
