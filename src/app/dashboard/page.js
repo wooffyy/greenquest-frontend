@@ -17,9 +17,9 @@ import api from "@/lib/api";
 const cookies = new Cookies();
 
 const getCurrentUserId = () => {
-  if (typeof window === "undefined") return 'anonymous';
+  if (typeof window === "undefined") return "anonymous";
   const userProfile = getUserProfile();
-  return userProfile?.id?.toString() || 'anonymous';
+  return userProfile?.id?.toString() || "anonymous";
 };
 
 export default function Main() {
@@ -46,7 +46,14 @@ export default function Main() {
     const userId = getCurrentUserId();
     const savedCompletedQuests = localStorage.getItem(`completedQuests_${userId}`);
     if (savedCompletedQuests) {
-      setCompletedQuests(new Set(JSON.parse(savedCompletedQuests)));
+      try {
+        const parsed = JSON.parse(savedCompletedQuests);
+        if (Array.isArray(parsed)) {
+          setCompletedQuests(new Set(parsed));
+        }
+      } catch (err) {
+        console.error("Failed to parse completedQuests:", err);
+      }
     }
   }, []);
 
@@ -149,7 +156,10 @@ export default function Main() {
                 <img src="/pfp.svg" alt="profile" className="w-10 h-10 p-2 rounded-full bg-[#1a1a1a]" />
               )}
             </Link>
-            <button onClick={openModal} className="w-full rounded-lg h-10 bg-white text-black hover:scale-[1.01] transition-all duration-200 ease-in-out">
+            <button
+              onClick={openModal}
+              className="w-full rounded-lg h-10 bg-white text-black hover:scale-[1.01] transition-all duration-200 ease-in-out"
+            >
               Share your eco-activities
             </button>
           </div>
@@ -160,10 +170,10 @@ export default function Main() {
           )}
         </section>
 
-        {/* Streak & Daily Quest */}
+        {/* Right Column */}
         <aside className="hidden md:flex col-span-2 flex-col gap-4 sticky top-24 h-fit">
           <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
-            <div className="text-4xl font-bold">{user.streak}</div>
+            <div className="text-4xl font-bold">{user.streak || 0}</div>
             <div className="text-sm font-semibold">DAYS</div>
           </div>
 
@@ -180,17 +190,26 @@ export default function Main() {
                         {quest.quest || `Mission ${index + 1}`}
                       </span>
                       {isQuestCompleted(quest.id) ? (
-                        <CircleCheck className="w-4 h-4 text-black" />
+                        <CircleCheck className="w-4 h-4 text-green-600 flex-shrink-0" />
                       ) : (
                         <Circle className="w-4 h-4 text-white" />
                       )}
                     </div>
-                    <div className={`w-full h-2 rounded-full transition-colors duration-200 cursor-pointer ${isQuestCompleted(quest.id) ? 'bg-green-600' : 'bg-black hover:bg-gray-800'}`}></div>
+                    <div
+                      className={`w-full h-2 rounded-full transition-colors duration-200 cursor-pointer ${
+                        isQuestCompleted(quest.id)
+                          ? "bg-green-600"
+                          : "bg-black hover:bg-gray-800"
+                      }`}
+                    ></div>
                   </div>
                 ))
               )}
             </div>
-            <Link href="/challenge" className="w-8 h-8 mt-8 ml-auto bg-white rounded-full flex items-center justify-center text-black font-bold hover:bg-gray-100 hover:scale-120 hover:shadow-md transition-all duration-200">
+            <Link
+              href="/challenge"
+              className="w-8 h-8 mt-8 ml-auto bg-white rounded-full flex items-center justify-center text-black font-bold hover:bg-gray-100 hover:scale-120 hover:shadow-md transition-all duration-200"
+            >
               →
             </Link>
           </div>

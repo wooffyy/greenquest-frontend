@@ -27,3 +27,4 @@ export async function completeQuest(questId) {
     throw new Error('Failed to complete quest: ' + error.message);
   }
 }
+
