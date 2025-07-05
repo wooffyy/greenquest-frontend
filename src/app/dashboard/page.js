@@ -11,7 +11,7 @@ import { CircleCheck } from "lucide-react";
 
 import { getLeaderboard } from "@/lib/api_leaderboard";
 import { getDailyQuests } from "@/lib/api_quest";
-import { getUserProfile } from "@/lib/auth";
+import { getUserById, getUserProfile } from "@/lib/auth";
 import { Circle } from "lucide-react";
 
 // Helper function to get current user ID
@@ -92,6 +92,17 @@ export default function Main() {
     getLeaderboard().then((data) =>{
       setTopUsers(data.slice(0, 5));
     });
+  }, []);
+
+  useEffect(() => {
+    async function fetchUser() {
+      const data = await getUserById();
+      if (data) {
+        setUser(data.user); // termasuk data streak
+      }
+    }
+  
+    fetchUser();
   }, []);
 
   return (
@@ -196,7 +207,7 @@ export default function Main() {
         {/* Right Column (2/8) - Streak & Daily Quest */}
         <aside className="hidden md:flex col-span-2 flex-col gap-4">
           <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
-            <div className="text-4xl font-bold">0</div>
+            <div className="text-4xl font-bold">{user.streak} STREAK</div>
             <div className="text-sm font-semibold">DAYS</div>
           </div>
 
