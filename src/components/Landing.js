@@ -3,7 +3,7 @@
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 import { login, register } from '@/lib/auth';
@@ -19,6 +19,27 @@ export default function Landing({ mode }) {
   const [showPassword, setShowPassword] = useState(false);
 
   const isLogin = mode === 'login';
+  const [form, setForm] = useState({
+    fullname: '',
+    username: '',
+    email: '',
+    password: '',
+  });
+
+  useEffect(() => {
+    // Ensure localStorage is accessed only on the client side
+    if (typeof window !== 'undefined') {
+      const storedUser = JSON.parse(localStorage.getItem('userProfile'));
+      if (storedUser) {
+        setForm({
+          fullname: storedUser.fullname || '',
+          username: storedUser.username || '',
+          email: storedUser.email || '',
+          password: '',
+        });
+      }
+    }
+  }, []);
 
   // LOGIN (langsung redirect)
   const handleLogin = async (e) => {
@@ -26,12 +47,12 @@ export default function Landing({ mode }) {
     const body = Object.fromEntries(new FormData(e.target));
 
     try {
-      const result = await login(body); 
+      const result = await login(body);
       if (result.success) {
         router.push("/dashboard");
       } else {
         setError(result.message);
-      } 
+      }
     } catch (error) {
       console.error(error);
       setError("Login Failed! Please check your username and password");
@@ -44,8 +65,10 @@ export default function Landing({ mode }) {
     const body = Object.fromEntries(new FormData(e.target));
 
     try {
-      await register(body);
-      router.push('/dashboard');
+      const result = await register(body);
+      if (result) {
+        router.push('/auth/login');
+      }
     } catch (error) {
       console.error(error);
       const message =
@@ -68,9 +91,9 @@ export default function Landing({ mode }) {
 
       <div className="flex flex-col md:flex-row items-center justify-center w-full max-w-7xl gap-12 md:gap-28">
         <div className="hidden md:flex flex-col items-center justify-center">
-          <img 
-            src="/images/auth_img.png" 
-            alt="Eco Challenge Illustration" 
+          <img
+            src="/images/auth_img.png"
+            alt="Eco Challenge Illustration"
             className="w-[26rem] h-[26rem] lg:w-[32rem] lg:h-[32rem] object-contain"
           />
           <h1 className="text-white text-3xl lg:text-4xl font-bold mt-6 text-center">
@@ -82,7 +105,7 @@ export default function Landing({ mode }) {
         <div className="w-full max-w-md">
           <div className="bg-white text-black rounded-3xl p-8 shadow-2xl">
             <Heading>{isLogin ? 'Sign In' : 'Sign Up'}</Heading>
-            
+
             <form onSubmit={isLogin ? handleLogin : handleRegister} className="space-y-6">
               {/* Full Name Field */}
               {!isLogin && (
@@ -102,21 +125,19 @@ export default function Landing({ mode }) {
               )}
 
               {/* Username Field */}
-              {!isLogin && (
-                <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-black mb-2">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your username"
-                  />
-                </div>
-              )}
+              <div>
+                <label htmlFor="username" className="block text-sm font-medium text-black mb-2">
+                  Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  required
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
+                  placeholder="Enter your username"
+                />
+              </div>
 
               {/* Email Field (Only for register)*/}
               {!isLogin && (
@@ -131,23 +152,6 @@ export default function Landing({ mode }) {
                     required
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
                     placeholder="Enter your email"
-                  />
-                </div>
-              )}
-              
-              {/* Username Field (Only for Login) */}
-              {isLogin && (
-                <div>
-                  <label htmlFor="username" className="block text-sm font-medium text-black mb-2">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#89F336] focus:border-transparent transition-all duration-200"
-                    placeholder="Enter your username"
                   />
                 </div>
               )}
@@ -188,8 +192,8 @@ export default function Landing({ mode }) {
                 {isLogin ? (
                   <>
                     Don't have an account yet?{' '}
-                    <Link 
-                      href="/auth/register" 
+                    <Link
+                      href="/auth/register"
                       className="text-[#89F336] font-semibold hover:underline transition-all duration-200"
                     >
                       Sign up
@@ -198,8 +202,8 @@ export default function Landing({ mode }) {
                 ) : (
                   <>
                     Do you already have an account?{' '}
-                    <Link 
-                      href="/auth/login" 
+                    <Link
+                      href="/auth/login"
                       className="text-[#89F336] font-semibold hover:underline transition-all duration-200"
                     >
                       Sign in

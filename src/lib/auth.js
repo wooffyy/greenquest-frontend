@@ -2,11 +2,11 @@ import api from "./api";
 import axios from "axios";
 import Cookies from "universal-cookie";
 
-const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT;
 const cookies = new Cookies();
 
 // Ambil user dari localStorage
 export function getUserProfile() {
+  if (typeof window === "undefined") return null;
   const userProfile = localStorage.getItem("userProfile");
   return userProfile ? JSON.parse(userProfile) : null;
 }
@@ -14,35 +14,35 @@ export function getUserProfile() {
 // Simpan user & token setelah login
 export async function login(payload) {
   try {
-    await axios.get(`http://127.0.0.1:8000/sanctum/csrf-cookie`, {
-      withCredentials: true
-    });
-
-    const res = await api.post(`/users/login`, payload, {
+    await axios.get("http://127.0.0.1:8000/sanctum/csrf-cookie", {
       withCredentials: true,
     });
 
-    // Simpan token di cookie
+    const res = await api.post("/users/login", payload, {
+      withCredentials: true,
+    });
+
     const token = res.data.data.token;
+
     cookies.set("Authorization", token, {
       path: "/",
       secure: true,
       sameSite: "Lax",
-      maxAge: 60 * 60 * 24 * 7,
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
-    // Ambil profil user
-    const profileRes = await api.get(`users/`, {
+    const profileRes = await api.get("users/", {
       headers: {
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
 
     const userData = profileRes.data.user;
-    
-    // Simpan profil ke localStorage
-    localStorage.setItem("userProfile", JSON.stringify(userData));
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("userProfile", JSON.stringify(userData));
+    }
 
     return { success: true, user: userData };
   } catch (error) {
@@ -87,7 +87,7 @@ export async function logout() {
     const token = cookies.get("Authorization");
 
     await api.post(
-      `logout`,
+      "logout",
       {},
       {
         headers: {
@@ -98,7 +98,10 @@ export async function logout() {
     );
 
     cookies.remove("Authorization", { path: "/" });
-    localStorage.removeItem("userProfile");
+
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("userProfile");
+    }
 
     return { success: true };
   } catch (error) {
@@ -107,26 +110,63 @@ export async function logout() {
   }
 }
 
+// Register user
 export async function register({ fullname, username, email, password }) {
-  const res = await api.post("/register", {
-    fullname,
-    username,
-    email,
-    password,
-    role: "User",   // set default role
-  });
-  return res.data.data;
+  try {
+    const res = await api.post("/register", {
+      fullname,
+      username,
+      email,
+      password,
+      role: "User", // default role
+    });
+
+    const token = res.data.data.token;
+
+    cookies.set("Authorization", token, {
+      path: "/",
+      secure: true,
+      sameSite: "Lax",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    const profileRes = await api.get("users/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const userData = profileRes.data.user;
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("userProfile", JSON.stringify(userData));
+    }
+
+    return { success: true, user: userData };
+  } catch (error) {
+    console.error("Register error:", error.response?.data || error.message);
+    return {
+      success: false,
+      message: error?.response?.data?.message || "Registration failed",
+    };
+  }
 }
 
+// Ambil profil user yang sedang login
+export async function getUserById() {
+  try {
+    const token = cookies.get("Authorization");
 
-export async function getUserById (){
-    const token = cookies.get("Authorization")
-    const res = await api.get(`users/`, 
-      { 
-        headers: 
-          { 
-            Authorization: `Bearer ${token}` 
-          } 
-      });
-      return res.data;
+    const res = await api.get("users/", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("Get user error:", error);
+    return null;
+  }
 }
