@@ -74,7 +74,6 @@ export default function Main() {
         setDailyQuests([]);
       }
     }
-
     fetchDailyQuests();
   }, []);
 
@@ -110,7 +109,7 @@ export default function Main() {
           className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200 cursor-pointer"
         >
           {user.photo ? (
-            <img src={`data:image/jpeg;base64,${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
+            <img src={`http://localhost:8000/storage/${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
           ) : (
             <img src="/pfp.svg" alt="profile picture" className="w-10 h-10 p-2 rounded-full bg-[#1a1a1a]" />
           )}
@@ -173,7 +172,7 @@ export default function Main() {
               className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#9aff4a] hover:scale-110 transition-all duration-200 cursor-pointer"
             >
               {user.photo ? (
-                <img src={`data:image/jpeg;base64,${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
+                <img src={`http://localhost:8000/storage/${user.photo}`} alt="profile picture" className="w-full h-full object-cover" />
               ) : (
                 <img src="/pfp.svg" alt="profile picture" className="w-10 h-10 p-2 rounded-full bg-[#1a1a1a]" />
               )}
