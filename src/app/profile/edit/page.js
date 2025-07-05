@@ -60,7 +60,6 @@ export default function ProfilePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setWarnUnsaved(false);
-    const token = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
 
     const formData = new FormData();
@@ -69,7 +68,7 @@ export default function ProfilePage() {
     });
 
     try {
-      const res = await updateUser({ id: user.id, token, data: formData });
+      const res = await updateUser({ id: user.id, data: formData });
       alert("Profile updated!");
       localStorage.setItem("user", JSON.stringify(res.data));
     } catch (err) {
@@ -79,14 +78,11 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    const token = localStorage.getItem("token");
     try {
-      await logoutUser(token);
+      await logoutUser();
     } catch (err) {
       console.error("Logout error:", err);
     }
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
     router.push("/");
   };
 
