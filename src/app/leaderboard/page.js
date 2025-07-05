@@ -41,7 +41,7 @@ export default function LeaderboardPage() {
             >
               <div className="flex items-center gap-4">
                 <img
-                  src={user.avatar || '/images/default-avatar.png'}
+                  src={`http://localhost:8000/storage/${user.photo}` || '/images/default-avatar.png'}
                   alt={user.username}
                   className="w-14 h-14 rounded-full bg-white object-cover"
                 />
@@ -88,7 +88,7 @@ function PodiumUser({ user, rank, height, isWinner = false }) {
         <div className="relative w-full h-full">
           <div className="w-full h-full rounded-full border-4 border-green-500 overflow-hidden bg-white">
             <img
-              src={user.avatar || '/images/default-avatar.png'}
+              src={`http://localhost:8000/storage/${user.photo}`|| '/images/default-avatar.png'}
               alt={user.username}
               className="object-cover w-full h-full"
             />
