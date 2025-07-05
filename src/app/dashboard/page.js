@@ -98,7 +98,7 @@ export default function Main() {
   return (
     <div className="min-h-screen bg-black text-white font-sans px-10 py-6">
       {/* Header */}
-      <header className="flex flex-col-3 md:flex-col-1 justify-between items-center mb-6">
+      <header className="flex flex-col-3 md:flex-col-1 justify-between items-center mb-6 sticky top-2">
         <div className="text-2xl font-bold md:hidden">
           <button onClick={() => setSidebarOpen(true)}><img src="./hamburger.svg" alt="menu" className="w-8 h-8"/></button>  
         </div>
@@ -120,7 +120,7 @@ export default function Main() {
       {/* Grid Layout */}
       <main className="grid grid-cols-1 md:grid-cols-8 gap-4 px-4 md:px-36 my-12 items-start">
         {/* Left Column (2/8) - Leaderboard */}
-        <aside className="hidden md:flex col-span-2 bg-[#89F336] text-black p-4 rounded-xl flex-col justify-between hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300">
+        <aside className="hidden md:flex col-span-2 bg-[#89F336] text-black p-4 rounded-xl flex-col justify-between hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 sticky top-24 h-fit">
           <div>
             <div className="font-semibold mb-4">LEADERBOARD</div>
             {topUsers.length === 0 ? (
@@ -195,7 +195,7 @@ export default function Main() {
         </section>
 
         {/* Right Column (2/8) - Streak & Daily Quest */}
-        <aside className="hidden md:flex col-span-2 flex-col gap-4">
+        <aside className="hidden md:flex col-span-2 flex-col gap-4 sticky top-24 h-fit">
           <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
             <div className="text-4xl font-bold">0</div>
             <div className="text-sm font-semibold">DAYS</div>
@@ -214,9 +214,9 @@ export default function Main() {
                         {quest.quest || `Mission ${index + 1}`}
                       </span>
                       {isQuestCompleted(quest.id) ? (
-                        <CircleCheck className="w-4 h-4 text-green-600 flex-shrink-0" />
+                        <CircleCheck className="w-4 h-4 text-bla flex-shrink-0" />
                       ) : (
-                        <Circle className="w-4 h-4 text-red-600 flex-shrink-0" />
+                        <Circle className="w-4 h-4 text-white flex-shrink-0" />
                       )}
                     </div>
                     <div className={`w-full h-2 rounded-full transition-colors duration-200 cursor-pointer ${
