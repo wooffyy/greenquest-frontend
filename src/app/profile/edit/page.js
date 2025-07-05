@@ -1,11 +1,10 @@
-'use client';
-
+'use client'
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from '@/components/Sidebar';
 import ProfileHeader from '@/components/ProfileHeader';
 import { updateUser, logoutUser } from '@/lib/api_edit';
-import { User, Mail, Lock, Camera, Save, X, Eye, EyeOff } from 'lucide-react';
+import { User, Eye, EyeOff, Camera } from 'lucide-react';
 
 export default function ProfilePage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -17,6 +16,7 @@ export default function ProfilePage() {
     photo: null,
   });
 
+  const [previewPhoto, setPreviewPhoto] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [warnUnsaved, setWarnUnsaved] = useState(false);
   const router = useRouter();
@@ -27,6 +27,7 @@ export default function ProfilePage() {
       router.push('/auth/login');
       return;
     }
+
     setForm({
       fullname: storedUser.fullname || '',
       username: storedUser.username || '',
@@ -34,6 +35,11 @@ export default function ProfilePage() {
       password: '',
       photo: null,
     });
+
+    // Set foto lama jika ada
+    if (storedUser.photo) {
+      setPreviewPhoto(storedUser.photo);
+    }
   }, []);
 
   useEffect(() => {
@@ -50,7 +56,14 @@ export default function ProfilePage() {
   const handleChange = (e) => {
     setWarnUnsaved(true);
     const { name, value, files } = e.target;
-    setForm((o) => ({ ...o, [name]: files ? files[0] : value }));
+
+    if (files && files[0] && name === 'photo') {
+      setForm((prev) => ({ ...prev, [name]: files[0] }));
+      const blobUrl = URL.createObjectURL(files[0]);
+      setPreviewPhoto(blobUrl);
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const triggerFileInput = () => {
@@ -60,7 +73,8 @@ export default function ProfilePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setWarnUnsaved(false);
-    const user = JSON.parse(localStorage.getItem("userProfile"));
+
+    const user = JSON.parse(localStorage.getItem('userProfile'));
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
@@ -69,11 +83,15 @@ export default function ProfilePage() {
 
     try {
       const res = await updateUser({ id: user.id, data: formData });
-      alert("Profile updated!");
-      localStorage.setItem("userProfile", JSON.stringify(res.data));
+
+      // Simpan user baru
+      localStorage.setItem('userProfile', JSON.stringify(res.data));
+
+      // Redirect ke halaman profile
+      router.push('/profile');
     } catch (err) {
-      console.error("Failed to update profile:", err);
-      alert("Failed to update profile");
+      console.error('Failed to update profile:', err);
+      alert('Failed to update profile');
     }
   };
 
@@ -81,13 +99,16 @@ export default function ProfilePage() {
     try {
       await logoutUser();
     } catch (err) {
-      console.error("Logout error:", err);
+      console.error('Logout error:', err);
     }
-    router.push("/");
+    router.push('/');
   };
 
   return (
-    <div className="min-h-screen bg-cover bg-center text-white" style={{ backgroundImage: "url('/images/bg-edit.jpg')" }}>
+    <div
+      className="min-h-screen bg-cover bg-center text-white"
+      style={{ backgroundImage: "url('/images/bg-edit.jpg')" }}
+    >
       <ProfileHeader
         isSidebarOpen={isSidebarOpen}
         setSidebarOpen={setIsSidebarOpen}
@@ -95,12 +116,23 @@ export default function ProfilePage() {
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       <div className="max-w-4xl mx-auto px-4 mt-8 md:mt-32">
-        <form onSubmit={handleSubmit} className="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20 space-y-8">
+        <form
+          onSubmit={handleSubmit}
+          className="bg-white/10 backdrop-blur-md rounded-3xl p-8 shadow-2xl border border-white/20 space-y-8"
+        >
           {/* Profile Header */}
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             <div className="relative group">
-              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-xl">
-                <User className="w-12 h-12 text-black" />
+              <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-xl overflow-hidden">
+                {previewPhoto ? (
+                  <img
+                    src={previewPhoto}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-12 h-12 text-black" />
+                )}
               </div>
               <input
                 type="file"
