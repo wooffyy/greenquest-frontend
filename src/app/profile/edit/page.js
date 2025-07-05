@@ -60,8 +60,7 @@ export default function ProfilePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setWarnUnsaved(false);
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user"));
+    const user = JSON.parse(localStorage.getItem("userProfile"));
 
     const formData = new FormData();
     Object.entries(form).forEach(([key, value]) => {
@@ -69,9 +68,9 @@ export default function ProfilePage() {
     });
 
     try {
-      const res = await updateUser({ id: user.id, token, data: formData });
+      const res = await updateUser({ id: user.id, data: formData });
       alert("Profile updated!");
-      localStorage.setItem("user", JSON.stringify(res.data));
+      localStorage.setItem("userProfile", JSON.stringify(res.data));
     } catch (err) {
       console.error("Failed to update profile:", err);
       alert("Failed to update profile");
@@ -79,14 +78,11 @@ export default function ProfilePage() {
   };
 
   const handleLogout = async () => {
-    const token = localStorage.getItem("token");
     try {
-      await logoutUser(token);
+      await logoutUser();
     } catch (err) {
       console.error("Logout error:", err);
     }
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
     router.push("/");
   };
 
