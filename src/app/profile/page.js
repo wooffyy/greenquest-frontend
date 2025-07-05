@@ -19,6 +19,7 @@ export default function GalleryPage() {
     const [isBadgeModalOpen, setBadgeModalOpen] = useState(false);
     const [user, setUser] = useState(null);
     const [posts, setPosts] = useState(null);
+    const [poin, setPoin] = useState(null);
 
     useEffect(() => {
         const token = cookies.get("Authorization");
@@ -31,15 +32,16 @@ export default function GalleryPage() {
 
         getUserById()
             .then((res) => {
-                 setUser(res.user);
-                 setPosts(res.posts);
+                setPoin(res.total_point)
+                setUser(res.user);
+                setPosts(res.posts);
             })
             .catch((err) => {
                 console.error("Failed to fetch user data", err);
                 router.push("/auth/login");
             });
     }, []);
-
+    
     if (!user) return <div className="text-white text-center p-8">Loading profile...</div>;
 
     return (
@@ -56,7 +58,7 @@ export default function GalleryPage() {
             {/* Mobile Layout */}
             <div className="md:hidden bg-black min-h-screen text-white">
                 {/* Profile Section */}
-                <ProfileInfo user={user} isMobile={true} />
+                <ProfileInfo user={user} point={poin} isMobile={true} />
 
                 {/* Stats and Streak Grid */}
                 <MobileStatsGrid 
@@ -70,7 +72,7 @@ export default function GalleryPage() {
             {/* Desktop Layout */}
             <div className="hidden md:block bg-black min-h-screen text-white">
                 {/* Profile Info */}
-                <ProfileInfo user={user} isMobile={false} />
+                <ProfileInfo user={user} point={poin} isMobile={false} />
 
                 <section className="items-center w-full max-w-[1200px] lg:max-w-[1400px] gap-4 mt-16 px-4 md:px-36 mx-auto">
                     <PostSection posts={posts} user={user} isMobile={false} />

@@ -1,25 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import ResponsiveHeader from '@/components/ResponsiveHeader';
 import dailyQuests from '@/data/DailyQuests';
 import Post from '@/components/Post';
 import { getDailyQuests, completeQuest } from '@/lib/api_quest';
 import { getUserProfile } from '@/lib/auth';
 
-// Helper function to get current user ID
-const getCurrentUserId = () => {
-  if (typeof window === "undefined") return 'anonymous';
-  const userProfile = getUserProfile();
-  return userProfile?.id?.toString() || 'anonymous';
-};
-
 export default function ChallengePage() {
-  const router = useRouter();
   const [currentUserId, setCurrentUserId] = useState(null);
-  const [dailyProgress, setDailyProgress] = useState([1, 1, 0]);
   const [dailyTimeLeft, setDailyTimeLeft] = useState(72000);
   const [selectedDailyQuests, setSelectedDailyQuests] = useState([]);
   const [showPostModal, setShowPostModal] = useState(false);
@@ -27,63 +16,50 @@ export default function ChallengePage() {
   const [currentQuestIndex, setCurrentQuestIndex] = useState(null);
   const [currentQuestType, setCurrentQuestType] = useState(null);
 
-  // Load completed quests from localStorage on component mount and when user changes
+  // Get user ID
   useEffect(() => {
-    const userId = getCurrentUserId();
-    
-    // If user changed, reset completed quests
-    if (currentUserId !== null && currentUserId !== userId) {
-      setCompletedQuests(new Set());
-    }
-    
-    setCurrentUserId(userId);
-    
-    const savedCompletedQuests = localStorage.getItem(`completedQuests_${userId}`);
-    if (savedCompletedQuests) {
-      setCompletedQuests(new Set(JSON.parse(savedCompletedQuests)));
-    } else {
-      // Clear completed quests if no data for this user
-      setCompletedQuests(new Set());
-    }
-  }, [currentUserId]);
+    async function fetchUser() {
+      const user = await getUserProfile();
+      const id = user?.id?.toString() || 'anonymous';
+      setCurrentUserId(id);
 
-  // Fetch daily quests (API or cache)
+      const savedCompleted = localStorage.getItem(`completedQuests_${id}`);
+      setCompletedQuests(new Set(JSON.parse(savedCompleted || '[]')));
+    }
+    fetchUser();
+  }, []);
+
+  // Fetch daily quests
   useEffect(() => {
     async function fetchQuests() {
       const cached = localStorage.getItem("dailyQuests");
       const cachedTime = localStorage.getItem("dailyQuestsTime");
       const now = Date.now();
 
-      if (cached && cachedTime && (now - cachedTime) < 86400000) { // <24 jam
-        console.log("Using cached quests");
+      if (cached && cachedTime && now - cachedTime < 86400000) {
         setSelectedDailyQuests(JSON.parse(cached));
-        const timeLeft = 86400 - Math.floor((now - cachedTime)/1000);
+        const timeLeft = 86400 - Math.floor((now - cachedTime) / 1000);
         setDailyTimeLeft(timeLeft);
       } else {
-        console.log("Fetching new quests from API");
         try {
-          const dailyData = await getDailyQuests();
-          setSelectedDailyQuests(dailyData);
-          localStorage.setItem("dailyQuests", JSON.stringify(dailyData));
+          const quests = await getDailyQuests();
+          setSelectedDailyQuests(quests);
+          localStorage.setItem("dailyQuests", JSON.stringify(quests));
           localStorage.setItem("dailyQuestsTime", now.toString());
           setDailyTimeLeft(86400);
-        } catch (error) {
-          console.error("Failed to fetch quests:", error);
-          // Fallback to shuffled local data if fails
-          console.log("Using fallback local quests");
-          const shuffledDaily = [...dailyQuests].sort(() => 0.5 - Math.random());
-          setSelectedDailyQuests(shuffledDaily.slice(0, 3));
+        } catch {
+          const shuffled = [...dailyQuests].sort(() => 0.5 - Math.random());
+          setSelectedDailyQuests(shuffled.slice(0, 3));
         }
       }
     }
-
     fetchQuests();
   }, []);
 
-  // Timer for countdown
+  // Countdown timer
   useEffect(() => {
     const timer = setInterval(() => {
-      setDailyTimeLeft((prev) => Math.max(prev - 1, 0));
+      setDailyTimeLeft(prev => Math.max(prev - 1, 0));
     }, 1000);
     return () => clearInterval(timer);
   }, []);
@@ -102,39 +78,23 @@ export default function ChallengePage() {
   };
 
   const handlePostSuccess = async () => {
-    let questId;
-    
-    console.log('handlePostSuccess called - currentQuestType:', currentQuestType, 'currentQuestIndex:', currentQuestIndex);
-    
+    console.log("📸 handlePostSuccess triggered");
     if (currentQuestType === 'daily') {
       const quest = selectedDailyQuests[currentQuestIndex];
-      questId = quest.id;
-      console.log('Daily quest to complete:', quest, 'questId:', questId);
-
-      // Only call API if quest has a valid ID from backend
-      if (questId && typeof questId === 'string') {
-        try {
+      const questId = quest?.id;
+      const point = quest?.point || 0;
+      const userId = currentUserId;
+      try {
           await completeQuest(questId);
-          console.log('Daily quest marked as completed in backend');
-        } catch (error) {
-          console.error('Failed to mark quest as completed:', error);
-          // Continue with local completion even if API fails
+          console.log('✅ Quest submitted to backend:', { questId, userId, point });
+        } catch (err) {
+          console.error('❌ Failed to submit quest:', err);
         }
-      }
-    }
 
-    console.log('Before update - completedQuests:', [...completedQuests]);
-    
-    // Update completed quests state
-    const newCompletedQuests = new Set([...completedQuests, questId]);
-    setCompletedQuests(newCompletedQuests);
-    
-    console.log('After update - newCompletedQuests:', [...newCompletedQuests]);
-    
-    // Save to localStorage with user-specific key
-    const userId = getCurrentUserId();
-    localStorage.setItem(`completedQuests_${userId}`, JSON.stringify([...newCompletedQuests]));
-    console.log('Saved to localStorage for user:', userId, [...newCompletedQuests]);
+      const updatedCompleted = new Set([...completedQuests, questId]);
+      setCompletedQuests(updatedCompleted);
+      localStorage.setItem(`completedQuests_${userId}`, JSON.stringify([...updatedCompleted]));
+    }
 
     setShowPostModal(false);
     setCurrentQuestIndex(null);
@@ -147,15 +107,8 @@ export default function ChallengePage() {
     setCurrentQuestType(null);
   };
 
-  const isQuestCompleted = (quest, questType = 'daily') => {
-    console.log('Checking quest completion:', quest, 'questType:', questType, 'completedQuests:', [...completedQuests]);
-    
-    if (questType === 'daily') {
-      const isCompleted = completedQuests.has(quest.id);
-      console.log('Daily quest', quest.id, 'is completed:', isCompleted);
-      return isCompleted;
-    }
-    return false;
+  const isQuestCompleted = (quest) => {
+    return completedQuests.has(quest.id);
   };
 
   return (

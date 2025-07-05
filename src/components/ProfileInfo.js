@@ -2,8 +2,9 @@
 import Link from "next/link";
 import StatsCard from "./StatsCard";
 
-export default function ProfileInfo({ user, isMobile = false }) {
-
+export default function ProfileInfo({ user,point, isMobile = false }) {
+  console.log(point);
+  
   if (isMobile) {
     return (
       <div className="flex flex-col items-center pt-8 pb-6">
@@ -53,7 +54,7 @@ export default function ProfileInfo({ user, isMobile = false }) {
           <div className="p-4 text-5xl md:text-7xl">{user.streak ?? 0}</div>
           <div className="p-4 text-lg md:text-xl">DAYS STREAK!</div>
         </div>
-        <StatsCard ecoPoints={user.ecoPoints ?? 0} className="mt-4" />
+        <StatsCard ecoPoints={point ?? 0} className="mt-4" />
       </div>
     </section>
   );

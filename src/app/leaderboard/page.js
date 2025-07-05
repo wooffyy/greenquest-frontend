@@ -8,7 +8,9 @@ export default function LeaderboardPage() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    getLeaderboard().then(setUsers);
+    getLeaderboard().then(res => 
+      setUsers(res)
+    );
   }, []);
 
   if (users.length < 3)
@@ -41,7 +43,7 @@ export default function LeaderboardPage() {
             >
               <div className="flex items-center gap-4">
                 <img
-                  src={`http://localhost:8000/storage/${user.photo}` || '/images/default-avatar.png'}
+                  src={`http://localhost:8000/storage/${user.avatar}` || '/images/default-avatar.png'}
                   alt={user.username}
                   className="w-14 h-14 rounded-full bg-white object-cover"
                 />
@@ -67,7 +69,7 @@ export default function LeaderboardPage() {
 function PodiumUser({ user, rank, height, isWinner = false }) {
   const bgColor = rank === 1 ? 'bg-white' : 'bg-green-700';
   const textColor = rank === 1 ? 'text-black' : 'text-white';
-
+  
   const badgeColors = {
     1: 'bg-[#FFD700]', // Gold
     2: 'bg-[#C0C0C0]', // Silver
@@ -88,7 +90,7 @@ function PodiumUser({ user, rank, height, isWinner = false }) {
         <div className="relative w-full h-full">
           <div className="w-full h-full rounded-full border-4 border-green-500 overflow-hidden bg-white">
             <img
-              src={`http://localhost:8000/storage/${user.photo}`|| '/images/default-avatar.png'}
+              src={`http://localhost:8000/storage/${user.avatar}`|| '/images/default-avatar.png'}
               alt={user.username}
               className="object-cover w-full h-full"
             />
