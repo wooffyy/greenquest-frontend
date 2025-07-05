@@ -7,7 +7,6 @@ import Post from "@/components/Post";
 import PostCards from "@/components/PostCards";
 import Sidebar from "@/components/Sidebar";
 import Link from "next/link";
-import { CircleCheck } from "lucide-react";
 
 import { getLeaderboard } from "@/lib/api_leaderboard";
 import { getDailyQuests } from "@/lib/api_quest";
@@ -27,8 +26,6 @@ export default function Main() {
   const [posts, setPosts] = useState([]);
   const [topUsers, setTopUsers] = useState([]);
   const [user, setUser] = useState({});
-  const [dailyQuests, setDailyQuests] = useState([]);
-  const [completedQuests, setCompletedQuests] = useState(new Set());
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -89,6 +86,21 @@ export default function Main() {
   }, []);
 
   useEffect(() => {
+    const token = cookies.get("Authorization")
+  api.get('/users', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+    .then(res =>  setStreak(res.data.users.streak)
+  )
+    .catch(err => {
+      console.error("Gagal fetch streak:", err)
+      setStreak(0)
+    })
+}, [])
+
+  useEffect(() => {
     getLeaderboard().then((data) =>{
       setTopUsers(data.slice(0, 5));
     });
@@ -98,7 +110,7 @@ export default function Main() {
     async function fetchUser() {
       const data = await getUserById();
       if (data) {
-        setUser(data.user); // termasuk data streak
+        setUser(data.user);
       }
     }
   
@@ -207,9 +219,10 @@ export default function Main() {
         {/* Right Column (2/8) - Streak & Daily Quest */}
         <aside className="hidden md:flex col-span-2 flex-col gap-4">
           <div className="bg-[#89F336] text-black p-6 rounded-xl flex flex-col items-center justify-center text-center hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300 cursor-pointer">
-            <div className="text-4xl font-bold">{user.streak} STREAK</div>
-            <div className="text-sm font-semibold">DAYS</div>
-          </div>
+        <div className="text-4xl font-bold">{user.streak}</div>
+        <div className="text-sm font-semibold">DAYS</div>
+        <div className="text-sm font-semibold">STREAK!</div>
+      </div>
 
           <div className="bg-[#89F336] text-black p-4 rounded-xl flex flex-col justify-between h-full hover:bg-[#9aff4a] hover:shadow-lg hover:shadow-[#89F336]/20 transition-all duration-300">
             <div className="font-semibold mb-2">DAILY QUEST</div>
